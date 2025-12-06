@@ -11,4 +11,4 @@ def read_root():
     Handles GET requests to the root endpoint.
     Returns a simple JSON response.
     """
-    return {"message": "Hello, World! Indranil here."}
+    return {"message": "Hello, World!"}

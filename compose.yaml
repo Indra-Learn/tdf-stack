@@ -27,7 +27,7 @@ services:
       - WEBHOOK_URL=https://n8n.thedatafestai.com/
       - GENERIC_TIMEZONE=Asia/Kolkata
     volumes:
-      - ./n8n_data:/home/node/.n8n
+      - ./tdf_n8n:/home/node/.n8n
 
   # --- Service 3: Nginx (Reverse Proxy) ---
   # Optional but recommended for production to handle domains

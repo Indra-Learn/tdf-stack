@@ -1,5 +1,5 @@
 # /opt/tdf-stack/docker-compose.yml
-# version: '3.8'
+version: '3.8'
 
 services:
   # --- Service 1: Nginx (The Gateway) ---

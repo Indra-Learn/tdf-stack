@@ -1,5 +1,5 @@
 # /opt/tdf-stack/docker-compose.yml
-# version: '3.8'
+version: '3.8'
 
 services:
   # --- Service 1: Nginx (The Gateway) ---
@@ -26,6 +26,7 @@ services:
       - N8N_PROTOCOL=http
       - WEBHOOK_URL=http://n8n.srv1163611.hstgr.cloud/
       - GENERIC_TIMEZONE=Asia/Kolkata
+      - N8N_SECURE_COOKIE=false
     volumes:
       - ./tdf_n8n:/home/node/.n8n
     user: "1000:1000" # Critical for permissions

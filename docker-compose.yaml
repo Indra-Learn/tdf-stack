@@ -1,39 +1,19 @@
-# /opt/tdf-stack/docker-compose.yml
-version: '3.8'
-
+version: "3"
 services:
-  # --- Service 1: Nginx (The Gateway) ---
-  nginx:
-    image: nginx:latest
-    container_name: nginx_proxy
-    restart: always
+  api:
+    container_name: tdfapi
+    build: tdf_api/.
+    env_file:
+      - ./.env
+    command: "uvicorn app:app --host 0.0.0.0 --port 8000 --reload"
     ports:
-      - "80:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    depends_on:
-      - n8n
-      - fastapi
+      - "8000:8000"
 
-  # --- Service 2: n8n ---
-  n8n:
-    image: docker.n8n.io/n8nio/n8n
-    container_name: n8n
-    restart: always
-    environment:
-      - N8N_HOST=n8n.srv1163611.hstgr.cloud
-      - N8N_PORT=5678
-      - N8N_PROTOCOL=http
-      - WEBHOOK_URL=http://n8n.srv1163611.hstgr.cloud/
-      - GENERIC_TIMEZONE=Asia/Kolkata
-      - N8N_SECURE_COOKIE=false
-    volumes:
-      - ./tdf_n8n:/home/node/.n8n
-    user: "1000:1000" # Critical for permissions
-
-  # --- Service 3: FastAPI ---
-  fastapi:
-    build: ./tdf_api
-    container_name: my_fastapi
-    restart: always
-  
+  chatbot:
+    container_name: tdfchatbot
+    build: tdf_chatbot/.
+    env_file:
+      - ./.env
+    command: "streamlit run --server.port 8501 app.py"
+    ports:
+      - "8501:8501"

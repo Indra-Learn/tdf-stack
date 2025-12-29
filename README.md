@@ -4,12 +4,14 @@ tdf-stack with Streamlit, Fastapi and N8N applications
 
 ## Follow The Below Steps To Develop Same Applications -
 
-## Clone The GitHub Repo - 
-    ```bash
 
+### One-Time Activity -
+
+1. Clone The GitHub Repo - 
+    ```bash
+    git clone 
     ```
-    
-### Python Virtual Environment -
+2. Create Python Virtual Environment -
     ```bash
     cd /opt/tdf-stack
 
@@ -25,7 +27,9 @@ tdf-stack with Streamlit, Fastapi and N8N applications
     apt install docker-compose
     ```
 
-### Docker Commands -
+### Daily Activity after above "One-Time Activity" is done -
+
+1. Run below Docker Commands to -
     ```bash
     docker compose up -d --build
     docker down

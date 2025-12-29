@@ -190,7 +190,7 @@ def get_nse_market_status_daily():
     out_dict['nifty50_status'] = nse_market_status.get('indicativenifty50').get('status')
     out_dict['giftnifty_close'] = nse_market_status.get('giftnifty').get('LASTPRICE')
     out_dict['giftnifty_change'] = nse_market_status.get('giftnifty').get('DAYCHANGE')
-    out_dict['giftnifty_perchange'] = nse_market_status.get('giftnifty').get('PERCHANGE').strip()
+    out_dict['giftnifty_perchange'] = nse_market_status.get('giftnifty').get('PERCHANGE')
     out_dict['marketcapin_trdollars'] = nse_market_status.get('marketcap').get('marketCapinTRDollars')
     out_dict['marketcapin_laccr_rupees'] = nse_market_status.get('marketcap').get('marketCapinLACCRRupees')
     out_dict['as_of_date'] = nse_market_status.get('indicativenifty50').get('dateTime')

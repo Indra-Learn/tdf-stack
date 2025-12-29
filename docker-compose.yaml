@@ -2,7 +2,9 @@ version: "3"
 services:
   api:
     container_name: tdfapi
-    build: tdf_api/.
+    build: 
+      context: .
+      dockerfile: tdf_api/Dockerfile
     env_file:
       - ./.env
     command: "uvicorn app:app --host 0.0.0.0 --port 8000 --reload"
@@ -11,9 +13,9 @@ services:
 
   chatbot:
     container_name: tdfchatbot
-    build: tdf_chatbot/.
-    env_file:
-      - ./.env
+    build: 
+      context: .
+      dockerfile: tdf_chatbot/Dockerfile
     command: "streamlit run --server.port 8501 app.py"
     ports:
       - "8501:8501"

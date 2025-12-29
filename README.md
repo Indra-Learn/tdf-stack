@@ -1,6 +1,14 @@
 # tdf-stack
-tdf-stack with Fastapi and N8N applications 
+tdf-stack with Streamlit, Fastapi and N8N applications 
 
+
+## Follow The Below Steps To Develop Same Applications -
+
+## Clone The GitHub Repo - 
+    ```bash
+
+    ```
+    
 ### Python Virtual Environment -
     ```bash
     cd /opt/tdf-stack
@@ -33,10 +41,11 @@ tdf-stack with Fastapi and N8N applications
 
 | ID  | App Name | App Details | Reference |
 | --- | :------- | ----------- | --------- |
-| 1. | [TDF-ChatBot](http://72.61.231.147:8501`) | `streamlit run ./tdf_chatbot/app.py`| |
+| 1. | [TDF-ChatBot](http://thedatafestai.com:8501`) | `streamlit run ./tdf_chatbot/app.py`| |
 | 2. | [TDF-Api](http://72.61.231.147:8000) | `python3 tdf_api/app.py`</br>`streamlit run ./tdf_api/client.py` | |
 
 
+## 
 ```bash
 cd /opt/tdf-stack
 source ./.venv/bin/activate

@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 # from langchain_deepseek import ChatDeepSeek
+from langchain.chat_models import init_chat_model
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
@@ -12,6 +13,7 @@ load_dotenv()
 
 os.environ["GEMINI_API_KEY"] = os.getenv("GEMINI_API_KEY")
 os.environ["DEEPSEEK_API_KEY"] = os.getenv("DEEPSEEK_API_KEY")
+os.environ["OPENROUTER_API_KEY"] = os.getenv("OPENROUTER_API_KEY")
 
 app = FastAPI(
     title="TDF API",
@@ -28,9 +30,24 @@ app = FastAPI(
 # model_deepseek = ChatDeepSeek(model="deepseek-chat", temperature=0, max_tokens=250) #gpt-3.5-turbo, gpt-4o-deepseek
 model_gemini = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0, max_tokens=250) #gemini-1.5-turbo
 model_llama = ChatGroq(model="llama-3.1-8b-instant", temperature=0, max_tokens=250)
+model_gpt = init_chat_model(
+    model="gpt-oss-20b",  # "anthropic/claude-3.7-sonnet:thinking"
+    model_provider="openai",
+    base_url="https://openrouter.ai/api/v1",
+    api_key=os.getenv("OPENROUTER_API_KEY"),
+    # default_headers={
+    #     "HTTP-Referer": os.getenv("YOUR_SITE_URL"),  # Optional. Site URL for rankings on openrouter.ai.
+    #     "X-Title": os.getenv("YOUR_SITE_NAME"),  # Optional. Site title for rankings on openrouter.ai.
+    # }
+)
+
+
+# response = model_gpt.invoke("What NFL team won the Super Bowl in the year Justin Bieber was born?")
+# print(response.content)
 
 prompt1 = ChatPromptTemplate.from_template("Write a concise summary about {company_ticker} with not more than 50 words. Also include recent stock performance and key financial metrics below the summary with bullet points.")
-prompt2 = ChatPromptTemplate.from_template("Write a concise summary about the sector, {company_ticker} belongs to and summary should be within 50 words. Also include the pros and cons about the sector with bullet points.")
+prompt2 = ChatPromptTemplate.from_template("Write a concise summary about the sector, {company_ticker} belongs to and summary should be within 50-100 words. Also include the pros and cons about the sector with bullet points.")
+prompt3 = ChatPromptTemplate.from_template("Provide investment recommendations for the sector, {company_ticker} belongs to. The recommendations should be within 50-150 words and include key factors to consider with bullet points.")
 
 add_routes(
     app,
@@ -42,6 +59,12 @@ add_routes(
     app,
     prompt2|model_llama,
     path="/sector_summary"
+)
+
+add_routes(
+    app,
+    prompt3|model_gpt,
+    path="/investment_recommendations"
 )
 
 

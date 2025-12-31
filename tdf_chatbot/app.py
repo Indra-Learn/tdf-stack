@@ -6,6 +6,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from tdf_utility.trading.nse_api import NSE_API, get_nse_india_vix, get_nse_market_status_daily
+from tdf_utility.trading.ep_api import fetch_fii_dii_data
 
 # configure
 tdf_api_url = "72.61.231.147:8000"
@@ -166,7 +167,9 @@ elif page == "Data Analysis":
     gold_historical_df['Date'] = pd.to_datetime(gold_historical_df['Date'], format='%d-%b-%Y')
     gold_historical_df['Gold 10gm'] = gold_historical_df['Gold 10gm'].astype(float)
 
-    market_status = get_nse_market_status_daily()
+    fii_dii_data_df = fetch_fii_dii_data(year="2025")
+
+    # market_status = get_nse_market_status_daily()
 
     # 2. Process the Data
     @st.cache_data
@@ -184,6 +187,7 @@ elif page == "Data Analysis":
                   india_vix_historical_data[['date', 'close']].rename(columns={'date': 'Date', 'close': 'India VIX'}),
                   on='Date', how='left')
     viz_df = pd.merge(viz_df, gold_historical_df, on='Date', how='left')
+    viz_df = pd.merge(viz_df, fii_dii_data_df, on='Date', how='left')
     
     # 3. Streamlit Layout
     st.markdown("Historical price movement visualization.")
@@ -263,11 +267,64 @@ elif page == "Data Analysis":
         legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01)
     )
 
+    # another fig
+    fig_nifty_fii_dii = make_subplots(specs=[[{"secondary_y": True}]])
+
+    # Trace 1: FII Net (Blue Bars)
+    fig_nifty_fii_dii.add_trace(
+        go.Bar(
+            x=viz_df['Date'],
+            y=viz_df['FII Net'],
+            name="FII Net",
+            marker_color='#42A5F5', # Light Blue
+            opacity=0.8
+        ),
+        secondary_y=False, # Left Axis
+    )
+
+    # Trace 2: DII Net (Red Bars)
+    fig_nifty_fii_dii.add_trace(
+        go.Bar(
+            x=viz_df['Date'],
+            y=viz_df['DII Net'],
+            name="DII Net",
+            marker_color="#B250EF", # Red/Pink
+            opacity=0.8
+        ),
+        secondary_y=False, # Left Axis
+    )
+
+    # Trace 3: Nifty 50 (Black Line) - Added LAST so it appears ON TOP
+    fig_nifty_fii_dii.add_trace(
+        go.Scatter(
+            x=viz_df['Date'],
+            y=viz_df['Nifty 50'],
+            name="Nifty 50",
+            mode='lines+markers',
+            line=dict(color="#00C805", width=3), # Dark line for contrast
+            marker=dict(size=4)
+        ),
+        secondary_y=True, # Right Axis
+    )
+
+    # --- 3. Layout Customization ---
+    fig_nifty_fii_dii.update_layout(
+        title="Institutional Flows vs Market Direction",
+        barmode='group', # Puts FII and DII bars side-by-side
+        height=600,
+        hovermode="x unified", # Shows all 3 values when hovering over a date
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        template="plotly_white"
+    )
+
+    # Axis Titles
+    fig_nifty_fii_dii.update_yaxes(title_text="<b>Net Flow (₹ Cr)</b>", secondary_y=False)
+    fig_nifty_fii_dii.update_yaxes(title_text="<b>Nifty 50 Price</b>", secondary_y=True, showgrid=False)
+
 
     # Render in Streamlit
     # st.markdown("### NSE Market Status")
     # st.write(market_status)
-    # ₹
 
     # Create simple metrics
     latest_data = viz_df.iloc[-1]
@@ -283,6 +340,8 @@ elif page == "Data Analysis":
 
     st.divider()
     st.plotly_chart(fig_nifty_indiavix, use_container_width=True)
+    st.divider()
+    st.plotly_chart(fig_nifty_fii_dii, use_container_width=True)
     st.divider()
     st.plotly_chart(fig_nifty_gold, use_container_width=True)
     st.divider()

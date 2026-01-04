@@ -128,6 +128,14 @@ nse_api_urls = [
     {
         "name": "nifty50_heatmap",
         "api_url": "https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi?functionName=getIndicesHeatMap&&index=NIFTY%2050"
+    },
+    {
+        "name": "nifty_next_50_heatmap",
+        "api_url": "https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi?functionName=getIndicesHeatMap&&index=NIFTY%20NEXT%2050"
+    },
+    {
+        "name": "nifty_next_50_graph_chart",
+        "api_url": "https://www.nseindia.com/api/NextApi/apiClient?functionName=getGraphChart&&type=NIFTY%20NEXT%2050&flag=1D"
     }
 ]
 
@@ -348,8 +356,16 @@ def load_graph_data_to_df(object: dict):
 def get_nifty_heatmap():
     nse_base_url = "https://www.nseindia.com/"
     nse_api = NSE_API()
+
     nifty50_heatmap_df = pd.DataFrame(nse_api._get_data(nse_api_urls_df[nse_api_urls_df["name"] == "nifty50_heatmap"]["api_url"].values[0].split(nse_base_url)[-1]).get("data"))
-    return nifty50_heatmap_df.loc[:, ['symbol', 'lastPrice', 'pchange', 'high', 'low', 'tradedVolume', 'tradedValue', 'vwap']]
+    nifty50_heatmap_df["nse_index"] = "Nifty 50"
+
+    nifty_next50_heatmap_df = pd.DataFrame(nse_api._get_data(nse_api_urls_df[nse_api_urls_df["name"] == "nifty_next_50_heatmap"]["api_url"].values[0].split(nse_base_url)[-1]).get("data"))
+    nifty_next50_heatmap_df["nse_index"] = "Nifty Next 50"
+
+    nifty_heatmap_df = pd.concat([nifty50_heatmap_df, nifty_next50_heatmap_df], ignore_index=True)
+    nifty_heatmap_df["Research"] = nifty_heatmap_df["symbol"].apply(lambda x: f"https://www.equitypandit.com/share-price/{x}")
+    return nifty_heatmap_df.loc[:, ['nse_index', 'symbol', 'lastPrice', 'pchange', 'high', 'low', 'tradedVolume', 'tradedValue', 'vwap', 'Research']]
 
 if __name__ == '__main__':
     nse_api = NSE_API()

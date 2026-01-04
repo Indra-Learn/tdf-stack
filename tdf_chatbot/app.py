@@ -101,7 +101,6 @@ def sourcing_viz_data():
 def sourcing_nifty_index_data():
     nse_api = NSE_API()
     nifty_heatmap_df = get_nifty_heatmap()
-    nifty_heatmap_df["nse_index"] = "Nifty 50"
     return nifty_heatmap_df
 
 ## Streamlit App
@@ -417,11 +416,13 @@ elif page == "Market Analysis":
 
             # Load Data
             if indices[i] == "Nifty 50":
-                df = nifty_heatmap_df[nifty_heatmap_df["nse_index"]=="Nifty 50"].copy()
+                df = nifty_heatmap_df[nifty_heatmap_df["nse_index"]=="Nifty 50"]
+            elif indices[i] == "Nifty Next 50":
+                df = nifty_heatmap_df[nifty_heatmap_df["nse_index"]=="Nifty Next 50"]
             else:
-                df = nifty_heatmap_df[nifty_heatmap_df["nse_index"]!="Nifty 50"]  # Placeholder for other indices
+                df = pd.DataFrame()
 
-            df = df.loc[:, ['symbol', 'lastPrice', 'pchange', 'high', 'low', 'tradedVolume', 'tradedValue', 'vwap']]
+            df = df.loc[:, ['symbol', 'lastPrice', 'pchange', 'high', 'low', 'tradedVolume', 'tradedValue', 'vwap', 'Research']]
             df.rename(columns={'symbol': 'Symbol', 
                                 'lastPrice': 'Last Price', 
                                 'pchange': 'Change %', 
@@ -436,11 +437,17 @@ elif page == "Market Analysis":
                 cmap="RdYlGn", 
                 vmin=-2, 
                 vmax=2
-            ).format({"Last Price": "₹{:.2f}", "Change %": "{:+.2f}%", "High": "₹{:.2f}", "Low": "₹{:.2f}", "VWAP": "₹{:.2f}"})
+            ).format({"Last Price": "₹{:.2f}", "Change %": "{:+.2f}%", "High": "₹{:.2f}", "Low": "₹{:.2f}", "Value": "₹{:.2f}", "VWAP": "₹{:.2f}"})
 
             edited_df = st.data_editor(
                 styled_df,
                 column_config={
+                    "Research": st.column_config.LinkColumn(
+                        "Research",
+                        validate="^https://.+$",
+                        display_text="Click Here",
+                        help="Click to view detailed research report",
+                    ),
                     "Select": st.column_config.CheckboxColumn(
                         "Trade?",
                         help="Select for Algo Execution",
@@ -450,6 +457,18 @@ elif page == "Market Analysis":
                         "Change %",
                         help="Daily Price Change",
                         format="%.2f %%"
+                    ),
+                    "Volume": st.column_config.NumberColumn(
+                        "Volume(Lakhs)",
+                        help="Number of shares or contracts exchanged"
+                    ),
+                    "Value": st.column_config.NumberColumn(
+                        "Value(Cr.)",
+                        help="Turnover = Price x Volume"
+                    ),
+                    "VWAP": st.column_config.NumberColumn(
+                        "VWAP",
+                        help="Volume Weighted Average Price = Value / Volume"
                     )
                 },
                 # symbol	lastPrice	pchange	high	low	tradedVolume	tradedValue	vwap

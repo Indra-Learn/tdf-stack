@@ -49,7 +49,7 @@ tdf-stack with Streamlit, Fastapi and N8N applications
 | 2. | [TDF-Api](http://72.61.231.147:8000) | `python3 tdf_api/app.py`</br>`streamlit run ./tdf_api/client.py` | |
 
 
-## 
+## Others
 ```bash
 cd /opt/tdf-stack
 source ./.venv/bin/activate
@@ -60,3 +60,6 @@ docker run -d --name tdfapi -p 8000:8000 --env-file .env -it tdf-fastapi:0.1
 docker build -t client:0.1 ./tdf_chatbot/
 docker run --name tdfbot -d -p 8501:8501 tdf-streamlit:0.1
 ```
+
+Ref:
+1. https://github.com/amolnaik/pynance/blob/master/app_utility/form_13f.py

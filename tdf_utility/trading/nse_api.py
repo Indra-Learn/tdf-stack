@@ -73,6 +73,67 @@ import numpy as np
 # sys.path.append(str(Path(os.getcwd()).absolute()))
 
 
+# announcement = "https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi?functionName=getAnnouncementsIndices&flag=CAN&&index=NIFTY%2050"
+# "https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi?functionName=getMostActiveContracts&&index=NIFTY"
+# "https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi?functionName=getCorporateAction&&flag=CAC&&index=NIFTY%2050"
+# "https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi?functionName=getConstituents&&index=NIFTY%2050&&noofrecords=7"
+# https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi?functionName=getContributionData&&index=NIFTY%2050&&flag=0
+# https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi?functionName=getContributionData&&index=NIFTY%2050&&noofrecords=0&&flag=1
+# top5 gainers: https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi?functionName=getTopFiveStock&&flag=G&&index=NIFTY%2050
+# top5 losers:  https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi?functionName=getTopFiveStock&&flag=L&&index=NIFTY%
+# 
+# shareholding pattern: https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi?functionName=getShareHoldingData&&symbol=ADANIENT
+# financial result = https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi?functionName=getFinancialResultGraph&&symbol=ADANIENT
+# board meeting: https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi?functionName=getBoardMeeting&&flag=BM&&index=NIFTY%2050
+#  https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi?functionName=getIndexFacts&&index=NIFTY%2050
+# 
+
+nse_api_urls = [
+    {
+        "name": "",
+        "api_url": ""
+    },
+    {
+        "name": "nifty50_company_name", 
+        "api_url": "https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi?functionName=getAllIndicesSymbols&&index=NIFTY%2050"
+    },
+    {
+        "name": "nifty50_index_data",
+        "api_url": "https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi?functionName=getIndexData&&index=NIFTY%2050"
+    },
+    {
+        "name": "nifty50_indices_return",
+        "api_url": "https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi?functionName=getIndicesReturn&&index=NIFTY%2050"
+    },
+    {
+        "name": "nifty50_index_chart_1d",
+        "api_url": "https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi?functionName=getIndexChart&&index=NIFTY%2050&flag=1D"
+    },
+    {
+        "name": "nifty50_advance_decline_counts",
+        "api_url": "https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi?functionName=getAdvanceDecline&&index=NIFTY%2050"
+    },
+    {
+        "name": "nifty50_gift_nifty",
+        "api_url": "https://www.nseindia.com/api/NextApi/apiClient?functionName=getGiftNifty"
+    },
+    {
+        "name": "nifty_all_index_data",
+        "api_url": "https://www.nseindia.com/api/NextApi/apiClient?functionName=getIndexData&&type=All"
+    },
+    {
+        "name": "nifty_all_indices_name",
+        "api_url": "https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi?functionName=getAllIndices"
+    },
+    {
+        "name": "nifty50_heatmap",
+        "api_url": "https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi?functionName=getIndicesHeatMap&&index=NIFTY%2050"
+    }
+]
+
+nse_api_urls_df = pd.DataFrame(nse_api_urls)
+
+
 class NSE_API():
     """
     helps to fetch data from NSE API
@@ -283,6 +344,12 @@ def load_graph_data_to_df(object: dict):
     df['Date'] = pd.to_datetime(df['Timestamp'], unit='ms')
     return df, identifier
 
+
+def get_nifty_heatmap():
+    nse_base_url = "https://www.nseindia.com/"
+    nse_api = NSE_API()
+    nifty50_heatmap_df = pd.DataFrame(nse_api._get_data(nse_api_urls_df[nse_api_urls_df["name"] == "nifty50_heatmap"]["api_url"].values[0].split(nse_base_url)[-1]).get("data"))
+    return nifty50_heatmap_df.loc[:, ['symbol', 'lastPrice', 'pchange', 'high', 'low', 'tradedVolume', 'tradedValue', 'vwap']]
 
 if __name__ == '__main__':
     nse_api = NSE_API()

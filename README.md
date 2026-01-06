@@ -4,7 +4,6 @@ tdf-stack with Streamlit, Fastapi and N8N applications
 
 ## Follow The Below Steps To Develop Same Applications -
 
-
 ### One-Time Activity -
 
 1. Clone The GitHub Repo - 
@@ -26,11 +25,44 @@ tdf-stack with Streamlit, Fastapi and N8N applications
 
     apt install docker-compose
     ```
+3. Install Nginx and Certbot on the VPS -
+    ```sh
+    apt update
+    apt install -y nginx certbot python3-certbot-nginx
+
+    # # Make sure Nginx is running:
+    # systemctl status nginx
+
+    # # 
+    nano /etc/nginx/sites-available/default
+
+    # # Update the nginx file for basic Nginx reverse proxy setup
+    <!-- Main site configs are in: /etc/nginx/sites-available/ -->
+    <!-- Enabled sites (symlinks) are in: /etc/nginx/sites-enabled/ -->
+    # # sudo nano /etc/nginx/sites-available/default
+    cat /opt/tdf-stack/tdf_others/default > /etc/nginx/sites-available/default
+
+    # # Test and reload:
+    sudo nginx -t
+    sudo systemctl reload nginx
+
+    # # Add HTTPS with Certbot
+    <!-- certbot --nginx -d yourdomain.com -d api.yourdomain.com  -->
+    sudo certbot --nginx -d thedatafestai.com
+
+    # # Test and reload again:
+    sudo nginx -t
+    sudo systemctl reload nginx
+
+    # # save log to "/var/log/letsencrypt/letsencrypt.log"
+    ```
 
 ### Daily Activity after above "One-Time Activity" is done -
 
 1. Run below Docker Commands to -
     ```bash
+    source ./.venv/bin/activate
+
     docker compose up -d --build
     docker down
 
@@ -49,17 +81,27 @@ tdf-stack with Streamlit, Fastapi and N8N applications
 | 2. | [TDF-Api](http://72.61.231.147:8000) | `python3 tdf_api/app.py`</br>`streamlit run ./tdf_api/client.py` | |
 
 
-## Others
+### Test The Application Using Separate Dockerfile -
 ```bash
 cd /opt/tdf-stack
 source ./.venv/bin/activate
 
-docker build -t api:0.1 ./tdf_api/
+docker build -t tdf-fastapi:0.1 ./tdf_api/
 docker run -d --name tdfapi -p 8000:8000 --env-file .env -it tdf-fastapi:0.1 
 
-docker build -t client:0.1 ./tdf_chatbot/
+docker build -t tdf-streamlit:0.1 ./tdf_chatbot/
 docker run --name tdfbot -d -p 8501:8501 tdf-streamlit:0.1
 ```
 
+## Other Details - 
+
 Ref:
 1. https://github.com/amolnaik/pynance/blob/master/app_utility/form_13f.py
+
+### Suggestions - 
+- Nginx listens on ports 80/443 on the VPS and reverse‑proxies:
+- https://yourdomain.com → Streamlit container
+- https://api.yourdomain.com (or a path like /api) → FastAPI container
+
+- A record for api.yourdomain.com → your VPS IP
+- https://github.com/nileshsarkarRA/Python-Simple-ChatBot

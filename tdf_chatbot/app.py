@@ -2,6 +2,7 @@ import requests
 import streamlit as st
 import pandas as pd
 import json
+from datetime import datetime as dt, timedelta as td
 from time import sleep
 import plotly.graph_objects as go
 import plotly.express as px
@@ -11,7 +12,7 @@ from tdf_utility.trading.nse_api import NSE_API, get_nse_india_vix, get_nse_mark
 from tdf_utility.trading.ep_api import fetch_fii_dii_data
 
 # configure
-tdf_api_url = "72.61.231.147:8000"
+# tdf_api_url = "72.61.231.147:8000"
 
 def call_tdf_llm_apis(endpoint: str, company_ticker: str) -> str:
     """
@@ -24,11 +25,11 @@ def call_tdf_llm_apis(endpoint: str, company_ticker: str) -> str:
     :return: Description
     :rtype: str
 
-    1. http://72.61.231.147:8000/company_summary
-    2. http://72.61.231.147:8000/sector_summary
-    3. http://72.61.231.147:8000/investment_recommendations
+    1. http://localhost:8000/company_summary
+    2. http://localhost:8000/sector_summary
+    3. http://localhost:8000/investment_recommendations
     """
-    response = requests.post(f"http://{tdf_api_url}/{endpoint}/invoke",
+    response = requests.post(f"http://localhost:8000/{endpoint}/invoke",
                              json={"input": {"company_ticker": company_ticker}})
     if response.status_code == 200:
         return response.json().get("output").get("content", 
@@ -48,9 +49,10 @@ def load_graph_data_to_df(object: dict):
 
 def sourcing_viz_data():
         duration = "1Y"
-        year = "2025"
-        from_dt = "31-12-2024"
-        to_dt = "30-12-2025"
+        current_date = dt.today()
+        year = str(current_date.year)
+        from_dt = (current_date - td(days=365)).strftime("%d-%m-%Y")
+        to_dt = (current_date).strftime("%d-%m-%Y")
 
         nse_api = NSE_API()
         
@@ -82,7 +84,7 @@ def sourcing_viz_data():
         crudeoil_historical_df['Date'] = pd.to_datetime(crudeoil_historical_df['Date'], format='%d-%b-%Y')
         crudeoil_historical_df['Crude Oil'] = crudeoil_historical_df['Crude Oil'].astype(float)
 
-        fii_dii_data_df = fetch_fii_dii_data(year=year)
+        fii_dii_data_df = fetch_fii_dii_data()
 
         nifty50_historical_graph_df, nifty50_graph_identifier = load_graph_data_to_df(nifty_50_historical_data)
 
@@ -143,19 +145,20 @@ with st.sidebar:
     # Simulating a Navigation Menu using radio buttons
     page = st.radio(
         "Go to",
-        ["Dashboard", "Market Analysis", "TDF ChatBot", "Settings", "About Us"]
+        ["Dashboard", "Market Analysis", "Portfolio Tracker", "TDF ChatBot", "Settings", "About Us"]
     )
     
     st.divider() # Adds a visual line separator
 
-    nifty_dashboard_page = st.selectbox(
-        "Nifty Dashboard Pages",
-        ["Nifty 50", "Nifty Bank"]
-    )
+    # nifty_dashboard_page = st.selectbox(
+    #     "Nifty Dashboard Pages",
+    #     ["Nifty 50", "Nifty Bank"]
+    # )
     
+    st.info("Comming Soon: More features and pages!")
     st.divider()
 
-    st.info("Note: The sidebar scrolls independently of the main page.")
+    st.info("Guest User: Limited Access.")
 
 
 style_metric_cards()
@@ -390,11 +393,15 @@ elif page == "Market Analysis":
     nifty50_diff = (latest_data["Nifty 50"] - prev_data["Nifty 50"]) / prev_data["Nifty 50"] * 100
     india_vix_diff = (latest_data["India VIX"] - prev_data["India VIX"]) / prev_data["India VIX"] * 100
     gold_10gm_diff = (latest_data["Gold 10gm"] - prev_data["Gold 10gm"]) / prev_data["Gold 10gm"] * 100
+    silver_1kg_diff = (latest_data["Silver 1kg"] - prev_data["Silver 1kg"]) / prev_data["Silver 1kg"] * 100
+    crude_oil_diff = (latest_data["Crude Oil"] - prev_data["Crude Oil"]) / prev_data["Crude Oil"] * 100
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4, col5 = st.columns(5)
     col1.metric("Nifty 50", f"₹{latest_data['Nifty 50']:.2f}", f"{nifty50_diff:.2f}%")
     col2.metric("India VIX", f"{latest_data['India VIX']:.2f}", f"{india_vix_diff:.2f}%", delta_color="inverse")
     col3.metric("Gold 10gm", f"₹{latest_data['Gold 10gm']:.2f}", f"{gold_10gm_diff:.2f}%")
+    col4.metric("Silver 1kg", f"₹{latest_data['Silver 1kg']:.2f}", f"{silver_1kg_diff:.2f}%")
+    col5.metric("Crude Oil", f"₹{latest_data['Crude Oil']:.2f}", f"{crude_oil_diff:.2f}%")
 
     st.divider()
     st.markdown("### [Nifty 50 Trends](https://www.nseindia.com/index-tracker/NIFTY%2050)")
@@ -490,6 +497,11 @@ elif page == "Market Analysis":
     # with st.expander("View Raw Data"):
     #     st.dataframe(df[['Date', 'Price']].style.format({"Price": "{:.2f}"}))
 
+elif page == "Portfolio Tracker":
+    st.subheader("Portfolio Tracker")
+    st.write("Track your investment portfolio here.")
+
+
 elif page == "TDF ChatBot":
     st.subheader("TDF ChatBot Interface")
     st.write("Interact with the TDF ChatBot here.")
@@ -528,7 +540,3 @@ elif page == "Settings":
 elif page == "About Us":
     st.subheader("About This App")
     st.write("This application was built to demonstrate a simple navbar layout.")
-
-elif nifty_dashboard_page == "Nifty 50":
-    st.subheader("Nifty 50 Dashboard")
-    st.markdown("Details and analytics for [Nifty 50](https://www.nseindia.com/index-tracker/NIFTY%2050).")

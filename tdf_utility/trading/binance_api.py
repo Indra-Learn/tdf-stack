@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 # parentdir = os.path.abspath(os.path.join(os.path.dirname(__file__)), os.path.pardir)
 # sys.path.append(parentdir)
 
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 
 load_dotenv()
 

@@ -88,6 +88,7 @@ source ./.venv/bin/activate
 
 docker build -t tdf-fastapi:0.1 ./tdf_api/
 docker run -d --name tdfapi -p 8000:8000 --env-file .env -it tdf-fastapi:0.1 
+docker run -d --name tdfapi -p 8000:8000 --env-file .env tdf-stack-api:latest
 
 docker build -t tdf-streamlit:0.1 ./tdf_chatbot/
 docker run --name tdfbot -d -p 8501:8501 tdf-streamlit:0.1
@@ -105,3 +106,28 @@ Ref:
 
 - A record for api.yourdomain.com → your VPS IP
 - https://github.com/nileshsarkarRA/Python-Simple-ChatBot
+
+
+## error -
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /company_summary/invoke (Caused by NewConnectionError("HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+Traceback:
+File "/app/app.py", line 515, in <module>
+    company_summary = call_tdf_llm_apis("company_summary", input_company_ticker)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/app/app.py", line 33, in call_tdf_llm_apis
+    response = requests.post(f"http://localhost:8000/{endpoint}/invoke",
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/usr/local/lib/python3.12/site-packages/requests/api.py", line 115, in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/usr/local/lib/python3.12/site-packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/usr/local/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/usr/local/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/usr/local/lib/python3.12/site-packages/requests/adapters.py", line 677, in send
+    raise ConnectionError(e, request=request)

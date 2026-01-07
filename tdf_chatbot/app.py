@@ -10,6 +10,7 @@ from plotly.subplots import make_subplots
 
 from tdf_utility.trading.nse_api import NSE_API, get_nse_india_vix, get_nse_market_status_daily, get_nifty_heatmap
 from tdf_utility.trading.ep_api import fetch_fii_dii_data
+from portfolio_track.kite_connect import kite_streamlit
 
 # configure
 # tdf_api_url = "72.61.231.147:8000"
@@ -29,8 +30,8 @@ def call_tdf_llm_apis(endpoint: str, company_ticker: str) -> str:
     2. http://localhost:8000/sector_summary
     3. http://localhost:8000/investment_recommendations
     """
-    response = requests.post(f"http://localhost:8000/{endpoint}/invoke",
-                             json={"input": {"company_ticker": company_ticker}})
+    response = requests.post(f"http://72.61.231.147:8000/{endpoint}/invoke",
+                             json={"input": {"company_ticker": company_ticker}}, verify=False)
     if response.status_code == 200:
         return response.json().get("output").get("content", 
                                                  "No data available for endpoint: {endpoint} and company: {company_ticker}.")
@@ -162,13 +163,13 @@ with st.sidebar:
 
 
 style_metric_cards()
-st.title("🦜🔗 TDF Applications - ")
-st.markdown("---")
 
 if "viz_df" not in st.session_state:
     st.session_state["viz_df"] = None
 if "nifty_heatmap_df" not in st.session_state:
     st.session_state["nifty_heatmap_df"] = None
+# if "kite_access_token" not in st.session_state:
+#     st.session_state["kite_access_token"] = None
 
 if page == "Dashboard":
     st.subheader("Welcome to the Dashboard")
@@ -220,7 +221,10 @@ if page == "Dashboard":
         )
 
 elif page == "Market Analysis":
-    st.subheader("TDF - Market Analysis")
+    st.title("TheDataFestAI - Market Analysis")
+    st.write("Investment is subject to market risk. Please read all scheme related documents carefully before investing.")
+    st.write("Also do you your own thorough research carefully before investing.")
+    st.markdown("---")
 
     # 1. Setup the data and 2. Process the Data
     # (In a real app, you might load this from an API or file)
@@ -478,7 +482,6 @@ elif page == "Market Analysis":
                         help="Volume Weighted Average Price = Value / Volume"
                     )
                 },
-                # symbol	lastPrice	pchange	high	low	tradedVolume	tradedValue	vwap
                 disabled=["Symbol", "Last Price", "Change %", "High", "Low", "Volume", "Value", "VWAP"],
                 hide_index=True,
                 use_container_width=True,
@@ -490,19 +493,19 @@ elif page == "Market Analysis":
     st.divider()
     st.markdown("**Disclaimer:** This is for information purposes only. These are not stock recommendations and should not be treated as such. Learn more about our recommendation services here... Also note that these screeners are based only on numbers. There is no screening for management quality.")
 
-
-    
-
     # 5. Show Raw Data (Optional)
     # with st.expander("View Raw Data"):
     #     st.dataframe(df[['Date', 'Price']].style.format({"Price": "{:.2f}"}))
 
 elif page == "Portfolio Tracker":
-    st.subheader("Portfolio Tracker")
+    st.title("🪁 TheDataFestAI - Portfolio Tracker")
     st.write("Track your investment portfolio here.")
-
+    st.markdown("---")
+    kite_streamlit()
 
 elif page == "TDF ChatBot":
+    st.title("🦜🔗 TDF Applications - ")
+    st.markdown("---")
     st.subheader("TDF ChatBot Interface")
     st.write("Interact with the TDF ChatBot here.")
     st.html("<h3>🚀 Get company and sector summaries using TDF API.</h3>")

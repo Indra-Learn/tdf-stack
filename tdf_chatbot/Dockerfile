@@ -12,5 +12,5 @@ EXPOSE 8501
 COPY tdf_utility/ /app/tdf_utility/
 COPY tdf_chatbot/ /app/
 
-CMD ["streamlit", "run", "--server.port", "8501", "app.py"]
+CMD ["streamlit", "run", "--server.port", "8501", "Home.py"]
 # CMD ["streamlit", "run", "--server.port", "8501", "--server.enableCORS", "false", "app.py"]

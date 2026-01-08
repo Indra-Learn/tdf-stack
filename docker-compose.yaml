@@ -17,6 +17,6 @@ services:
       dockerfile: tdf_chatbot/Dockerfile
     env_file:
       - ./.env
-    command: "streamlit run --server.port 8501 app.py"
+    command: "streamlit run --server.port 8501 Home.py"
     ports:
       - "8501:8501"

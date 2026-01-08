@@ -7,9 +7,9 @@ https://kite.trade/docs/connect/v3/
 """
 
 import os
-from dotenv import load_dotenv
 import streamlit as st
 from kiteconnect import KiteConnect
+from dotenv import load_dotenv
 
 load_dotenv()
 

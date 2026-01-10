@@ -106,7 +106,7 @@ Ref:
 
 - A record for api.yourdomain.com → your VPS IP
 - https://github.com/nileshsarkarRA/Python-Simple-ChatBot
-
+- Kite (https://kite.trade/docs/pykiteconnect/v4/)
 
 ## error -
 requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /company_summary/invoke (Caused by NewConnectionError("HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))

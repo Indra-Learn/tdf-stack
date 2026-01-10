@@ -1,7 +1,9 @@
 import streamlit as st
-
+from src.streamlit_side_navbar import render_sidebar
 
 st.set_page_config(page_title="Overview", layout="wide")
+
+render_sidebar()
 
 st.subheader("Welcome to TheDataFestAI Smart Finance App")
 st.write("Here is your multiple investment options")

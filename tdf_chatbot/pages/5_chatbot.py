@@ -1,8 +1,11 @@
 import streamlit as st
 from src.tdf_llm_apis import call_tdf_llm_apis
+from src.streamlit_side_navbar import render_sidebar
 
 
 st.set_page_config(page_title="ChatBot", layout="wide")
+
+render_sidebar()
 
 st.title("🦜🔗 TDF Applications - ")
 st.markdown("---")

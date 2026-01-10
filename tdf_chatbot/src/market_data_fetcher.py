@@ -69,4 +69,5 @@ def sourcing_viz_data():
 def sourcing_nifty_index_data():
     nse_api = NSE_API()
     nifty_heatmap_df = get_nifty_heatmap()
+    nifty_heatmap_df["Company Profile"] = nifty_heatmap_df["symbol"].apply(lambda x: f"/company_profile?ticker_symbol={x}")
     return nifty_heatmap_df

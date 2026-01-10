@@ -10,6 +10,7 @@ import os
 import streamlit as st
 from kiteconnect import KiteConnect
 from dotenv import load_dotenv
+import pandas as pd
 
 load_dotenv()
 
@@ -19,7 +20,7 @@ KITE_API_SECRET = os.getenv("KITE_API_SECRET")
 def kite_streamlit():
     if "kite" not in st.session_state:
         st.session_state.kite = None
-    st.write("kite_streamlit Page")
+    # st.write("kite_streamlit Page")
     
     query_params = st.query_params
     request_token = query_params.get("request_token")
@@ -66,3 +67,10 @@ def kite_streamlit():
 
         # Display the login button
         st.link_button("🔐 Login with Zerodha-Kite ", login_url)
+
+def kite_portfolio(holdings):
+    df = pd.DataFrame(holdings)
+    df = df.loc[:, ["tradingsymbol", "quantity", "opening_quantity", "short_quantity",
+                    "collateral_quantity", "collateral_type", "discrepancy", "average_price",
+                    "last_price", "close_price", "pnl", "day_change", "day_change_percentage"]]
+    return df

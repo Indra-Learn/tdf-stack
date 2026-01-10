@@ -5,10 +5,11 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 from src.market_data_fetcher import sourcing_viz_data, sourcing_nifty_index_data
 from src.streamlit_styles import style_metric_cards
-
+from src.streamlit_side_navbar import render_sidebar
 
 st.set_page_config(page_title="Market Analysis", layout="wide")
 
+render_sidebar()
 style_metric_cards()
 
 if "viz_df" not in st.session_state:
@@ -17,7 +18,7 @@ if "nifty_heatmap_df" not in st.session_state:
     st.session_state["nifty_heatmap_df"] = None
 
 
-st.title("TheDataFestAI - Market Analysis")
+st.subheader("TheDataFestAI - Market Analysis")
 st.write("Investment is subject to market risk. Please read all scheme related documents carefully before investing.")
 st.write("Also do you your own thorough research carefully before investing.")
 st.markdown("---")
@@ -229,7 +230,7 @@ for i, tab in enumerate(tabs):
         else:
             df = pd.DataFrame()
 
-        df = df.loc[:, ['symbol', 'lastPrice', 'pchange', 'high', 'low', 'tradedVolume', 'tradedValue', 'vwap', 'Research']]
+        df = df.loc[:, ['symbol', 'lastPrice', 'pchange', 'high', 'low', 'tradedVolume', 'tradedValue', 'vwap', 'Research', 'Company Profile']]
         df.rename(columns={'symbol': 'Symbol', 
                             'lastPrice': 'Last Price', 
                             'pchange': 'Change %', 
@@ -254,6 +255,12 @@ for i, tab in enumerate(tabs):
                     validate="^https://.+$",
                     display_text="Click Here",
                     help="Click to view detailed research report",
+                ),
+                "Company Profile": st.column_config.LinkColumn(
+                    "Company Profile",
+                    validate="^https://.+$",
+                    display_text="Get Details",
+                    help="Click to view detailed report",
                 ),
                 "Select": st.column_config.CheckboxColumn(
                     "Trade?",

@@ -1,5 +1,5 @@
 import streamlit as st
-
+from src.streamlit_side_navbar import render_sidebar
 
 # Configure the page settings (Global)
 st.set_page_config(
@@ -8,6 +8,8 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+render_sidebar()
 
 st.title("🦅 Welcome to TheDataFestAI Smart Finance")
 

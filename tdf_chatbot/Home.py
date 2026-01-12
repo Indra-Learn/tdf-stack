@@ -2,7 +2,6 @@ import streamlit as st
 from src.streamlit_side_navbar import render_sidebar
 from src.google_auth import login_button, get_current_user, logout
 
-
 # Configure the page settings (Global)
 st.set_page_config(
     page_title="TheDataFestAI Smart Finance",
@@ -11,10 +10,22 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-if "user_info" not in st.session_state:
-    st.session_state["user_info"] = None
-
 st.title("🦅 Welcome to TheDataFestAI Smart Finance")
+
+def login_screen():
+    st.subheader("Please log in.")
+    st.button("Log in with Google", on_click=st.login, type="primary", icon=":material/login:")
+
+if not st.user.is_logged_in:
+    login_screen()
+else:
+    # st.header(f"Welcome, {st.user.name}!")
+    st.html(f"Hello, <span style='color: orange; font-weight: bold;'>{st.user.name}</span>!")
+    st.button("Log out", on_click=st.logout, type="secondary", icon=":material/logout:")
+    render_sidebar()
+
+st.caption(f"Streamlit version {st.__version__}")
+
 
 # user = get_current_user()
 
@@ -28,7 +39,7 @@ st.title("🦅 Welcome to TheDataFestAI Smart Finance")
 #     st.stop()
 
 # --- LOGGED IN STATE ---
-render_sidebar()
+# render_sidebar()
 
 # st.title(f"Welcome, {user.get('name')}")
 # st.write(f"Logged in as: *{user.get('email')}*")

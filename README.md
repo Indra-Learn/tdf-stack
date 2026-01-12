@@ -115,6 +115,8 @@ Ref:
 - A record for api.yourdomain.com → your VPS IP
 - https://github.com/nileshsarkarRA/Python-Simple-ChatBot
 - Kite (https://kite.trade/docs/pykiteconnect/v4/)
+- oauth2 → https://medium.com/@pranay.shah/oauth-in-streamlit-is-now-built-in-heres-how-to-use-it-c768b9f677ed
+- google sheet → https://docs.streamlit.io/develop/tutorials/databases/private-gsheet
 
 ## error -
 requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /company_summary/invoke (Caused by NewConnectionError("HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))

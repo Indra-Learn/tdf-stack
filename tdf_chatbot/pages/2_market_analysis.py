@@ -16,12 +16,15 @@ if "viz_df" not in st.session_state:
     st.session_state["viz_df"] = None
 if "nifty_heatmap_df" not in st.session_state:
     st.session_state["nifty_heatmap_df"] = None
+# if "selected_ticker" not in st.session_state:
+#     st.session_state["selected_ticker"] = None
 
 
 st.subheader("TheDataFestAI - Market Analysis")
 st.write("Investment is subject to market risk. Please read all scheme related documents carefully before investing.")
 st.write("Also do you your own thorough research carefully before investing.")
 st.markdown("---")
+
 
 # 1. Setup the data and 2. Process the Data
 # (In a real app, you might load this from an API or file)
@@ -230,7 +233,7 @@ for i, tab in enumerate(tabs):
         else:
             df = pd.DataFrame()
 
-        df = df.loc[:, ['symbol', 'lastPrice', 'pchange', 'high', 'low', 'tradedVolume', 'tradedValue', 'vwap', 'Research', 'Company Profile']]
+        df = df.loc[:, ['symbol', 'lastPrice', 'pchange', 'high', 'low', 'tradedVolume', 'tradedValue', 'vwap', 'Research']]  # 'Company Profile'
         df.rename(columns={'symbol': 'Symbol', 
                             'lastPrice': 'Last Price', 
                             'pchange': 'Change %', 
@@ -239,7 +242,7 @@ for i, tab in enumerate(tabs):
                             'tradedVolume': 'Volume', 
                             'tradedValue': 'Value', 
                             'vwap': 'VWAP'}, inplace=True)
-        df['Select'] = False
+        # df['Select'] = False
         styled_df = df.style.background_gradient(
             subset=["Change %"], 
             cmap="RdYlGn", 
@@ -247,7 +250,7 @@ for i, tab in enumerate(tabs):
             vmax=2
         ).format({"Last Price": "₹{:.2f}", "Change %": "{:+.2f}%", "High": "₹{:.2f}", "Low": "₹{:.2f}", "Value": "₹{:.2f}", "VWAP": "₹{:.2f}"})
 
-        edited_df = st.data_editor(
+        edited_df = st.dataframe(
             styled_df,
             column_config={
                 "Research": st.column_config.LinkColumn(
@@ -256,17 +259,17 @@ for i, tab in enumerate(tabs):
                     display_text="Click Here",
                     help="Click to view detailed research report",
                 ),
-                "Company Profile": st.column_config.LinkColumn(
-                    "Company Profile",
-                    validate="^https://.+$",
-                    display_text="Get Details",
-                    help="Click to view detailed report",
-                ),
-                "Select": st.column_config.CheckboxColumn(
-                    "Trade?",
-                    help="Select for Algo Execution",
-                    default=False,
-                ),
+                # "Company Profile": st.column_config.LinkColumn(
+                #     "Company Profile",
+                #     validate="^https://.+$",
+                #     display_text="Get Details",
+                #     help="Click to view detailed report",
+                # ),
+                # "Select": st.column_config.CheckboxColumn(
+                #     "Trade?",
+                #     help="Select for Algo Execution",
+                #     default=False,
+                # ),
                 "Change %": st.column_config.NumberColumn(
                     "Change %",
                     help="Daily Price Change",
@@ -285,13 +288,29 @@ for i, tab in enumerate(tabs):
                     help="Volume Weighted Average Price = Value / Volume"
                 )
             },
-            disabled=["Symbol", "Last Price", "Change %", "High", "Low", "Volume", "Value", "VWAP"],
+            # disabled=["Symbol", "Last Price", "Change %", "High", "Low", "Volume", "Value", "VWAP"],
             hide_index=True,
             use_container_width=True,
             height=500,
-            key=f"editor_{indices[i]}" # Unique key for each tab
+            key=f"editor_{indices[i]}", # Unique key for each tab
+            selection_mode="single-row",
+            on_select="rerun",
         )
 
+        # st.write(edited_df.iat)
+        if len(edited_df.selection["rows"]) > 0:
+            # Get the selected row index
+            selected_index = edited_df.selection["rows"][0]
+            selected_ticker = df.iloc[selected_index]["Symbol"]
+            
+            # # 3. Pass Data & Switch Page
+            # # We store the ticker in session_state so the next page can read it
+            # st.session_state["selected_ticker"] = selected_ticker
+            
+            # This switches page WITHOUT opening a new tab -> Session Preserved!
+            st.page_link("pages/4_company_profile.py", 
+                         query_params={"ticker_symbol": selected_ticker}, 
+                         label=f"Check Company Profile: {selected_ticker}")
 
 st.divider()
 st.markdown("**Disclaimer:** This is for information purposes only. These are not stock recommendations and should not be treated as such. Learn more about our recommendation services here... Also note that these screeners are based only on numbers. There is no screening for management quality.")

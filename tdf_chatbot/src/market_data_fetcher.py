@@ -1,3 +1,4 @@
+import streamlit as st
 import pandas as pd
 from datetime import datetime as dt, timedelta as td
 from time import sleep
@@ -13,6 +14,8 @@ def _load_graph_data_to_df(object: dict):
     df['Date'] = pd.to_datetime(df['Timestamp'], unit='ms')
     return df, identifier
 
+# ttl=3000 means "Refresh this data every 50 minutes (50*60 seconds)"
+@st.cache_data(ttl=3000, show_spinner="Fetching Market Data...")
 def sourcing_viz_data():
     duration = "1Y"
     current_date = dt.today()
@@ -63,11 +66,14 @@ def sourcing_viz_data():
     viz_df = pd.merge(viz_df, fii_dii_data_df, on='Date', how='left')
 
     # market_status = get_nse_market_status_daily()
+    # st.sidebar.write("Data is fetched and stored into cache")
     return viz_df
 
 
+@st.cache_data(ttl=3000, show_spinner="Fetching Market Data...")
 def sourcing_nifty_index_data():
     nse_api = NSE_API()
     nifty_heatmap_df = get_nifty_heatmap()
     nifty_heatmap_df["Company Profile"] = nifty_heatmap_df["symbol"].apply(lambda x: f"/company_profile?ticker_symbol={x}")
+    # st.sidebar.write("Data is fetched and stored into cache")
     return nifty_heatmap_df

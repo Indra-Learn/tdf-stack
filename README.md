@@ -56,7 +56,15 @@ tdf-stack with Streamlit, Fastapi and N8N applications
 
     # # save log to "/var/log/letsencrypt/letsencrypt.log"
     ```
+    
+4. Implement Google SingleSignOn (SSO) -
+    1. ref: https://www.youtube.com/watch?v=QziGFxHM1pA
+    2. open "https://console.cloud.google.com/projectselector2/auth/clients"
+    3. first, create "Branding" with app_name, user_support_email
+    4. second, create "Client", application_type(Web Application), name(tdf_client), redirect_uri(https://thedatafestai.com/auth_callback)
+    5. 
 
+    
 ### Daily Activity after above "One-Time Activity" is done -
 
 1. Run below Docker Commands to -

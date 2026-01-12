@@ -1,5 +1,7 @@
 import streamlit as st
 from src.streamlit_side_navbar import render_sidebar
+from src.google_auth import login_button, get_current_user, logout
+
 
 # Configure the page settings (Global)
 st.set_page_config(
@@ -9,20 +11,28 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-render_sidebar()
+if "user_info" not in st.session_state:
+    st.session_state["user_info"] = None
 
 st.title("🦅 Welcome to TheDataFestAI Smart Finance")
 
-# Simple State Management
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
+# user = get_current_user()
 
-if not st.session_state.logged_in:
-    st.warning("Please Login to access the Algo Dashboard.")
-    if st.button("Log In (Simulation)"):
-        st.session_state.logged_in = True
-        st.success("Logged in! Check the sidebar for new pages.")
-        st.rerun()
-else:
-    st.info("✅ System Status: ONLINE")
-    st.write("Navigate to the **Dashboard** or **Algo Strategy** pages using the sidebar.")
+# if not user:
+#     # --- LOGGED OUT STATE ---
+#     col1, col2, col3 = st.columns([1, 2, 1])
+#     with col2:
+#         st.title("🔒 Login Required")
+#         st.write("Welcome to the Algo Platform. Please verify your identity.")
+#         login_button() # Shows the Google Button
+#     st.stop()
+
+# --- LOGGED IN STATE ---
+render_sidebar()
+
+# st.title(f"Welcome, {user.get('name')}")
+# st.write(f"Logged in as: *{user.get('email')}*")
+
+# if st.button("Logout"):
+#     logout()
+

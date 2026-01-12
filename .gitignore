@@ -210,3 +210,6 @@ __marimo__/
 # N8N
 /tdf_n8n/*
 /backups/*
+
+# STREAMLIT
+.streamlit

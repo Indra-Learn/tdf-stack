@@ -6,3 +6,5 @@ plotly==6.5.0
 matplotlib==3.10.8
 kiteconnect==5.0.1
 python-dotenv==1.2.1
+authlib==1.6.6
+extra-streamlit-components==0.1.81

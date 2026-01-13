@@ -11,6 +11,9 @@ KITE_API_KEY = os.getenv("KITE_API_KEY")
 st.set_page_config(page_title="Settings", layout="wide")
 
 render_sidebar()
+if not st.user.is_logged_in:
+    st.error("You do not have permission to view this page. Please log in from the home page.")
+    st.stop() 
 
 if "kite" not in st.session_state:
     st.session_state.kite = None
@@ -51,7 +54,9 @@ with st.container(border=True):
                 kite = KiteConnect(api_key=KITE_API_KEY)
                 # login_url = kite.login_url()
                 login_url = f"https://kite.zerodha.com/connect/login?api_key={KITE_API_KEY}"
-                st.link_button("🔐 Login to Kite", login_url, type="primary")
+                # st.link_button("🔐 Login to Kite", login_url, type="primary")
+                if st.button("🔐 Login to Kite", type="primary"):
+                    st.markdown(f'<meta http-equiv="refresh" content="0;url={login_url}">', unsafe_allow_html=True)
             except Exception:
                 st.error("API Key Missing")
 

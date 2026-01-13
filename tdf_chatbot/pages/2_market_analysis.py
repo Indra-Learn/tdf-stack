@@ -308,7 +308,7 @@ for i, tab in enumerate(tabs):
             # st.session_state["selected_ticker"] = selected_ticker
             
             # This switches page WITHOUT opening a new tab -> Session Preserved!
-            st.page_link("pages/4_company_profile.py", 
+            st.page_link("pages/3_company_profile.py", 
                          query_params={"ticker_symbol": selected_ticker}, 
                          label=f"Check Company Profile: {selected_ticker}")
 

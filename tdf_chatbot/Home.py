@@ -16,13 +16,24 @@ def login_screen():
     st.subheader("Please log in.")
     st.button("Log in with Google", on_click=st.login, type="primary", icon=":material/login:")
 
+render_sidebar()
+
 if not st.user.is_logged_in:
     login_screen()
 else:
     # st.header(f"Welcome, {st.user.name}!")
-    st.html(f"Hello, <span style='color: orange; font-weight: bold;'>{st.user.name}</span>!")
-    st.button("Log out", on_click=st.logout, type="secondary", icon=":material/logout:")
-    render_sidebar()
+    col1, col2, col3 = st.columns([1, 2, 2])
+    with col1:
+        st.image(st.user.picture)
+    with col2:
+        st.html(f"""Hello, <span style='color: orange; font-weight: bold;'>{st.user.name}</span><br>
+                <span style='color: blue; font-weight: bold;'>({st.user.email})</span>""")
+    with col3:
+        # st.button("Log out", on_click=st.logout, type="secondary", icon=":material/logout:")
+        if st.button("Log out", type="secondary", icon=":material/logout:"):
+            if "kite" in st.session_state:
+                st.session_state.kite = None
+            st.logout()
 
 st.caption(f"Streamlit version {st.__version__}")
 

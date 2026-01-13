@@ -6,6 +6,9 @@ from src.streamlit_side_navbar import render_sidebar
 st.set_page_config(page_title="ChatBot", layout="wide")
 
 render_sidebar()
+if not st.user.is_logged_in:
+    st.error("You do not have permission to view this page. Please log in from the home page.")
+    st.stop() 
 
 st.title("🦜🔗 TDF Applications - ")
 st.markdown("---")

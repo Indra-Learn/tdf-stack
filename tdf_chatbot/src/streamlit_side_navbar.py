@@ -1,17 +1,25 @@
 import streamlit as st
 
 def render_sidebar():
+    is_disabled = True
     with st.sidebar:
         st.subheader("🧠   TheDataFestAI (TDF)")
         st.markdown("---")
+        if st.user.is_logged_in:
+            st.html(f"Hello, <span style='color: orange; font-weight: bold;'>{st.user.name}</span>")
+            is_disabled = False
+        else:
+            st.html("Hello, <span style='color: orange; font-weight: bold;'>Guest User</span>!")
+        st.page_link("Home.py", label="Login / Logout")
+        st.divider()
         # Manually list ONLY the pages you want the user to see
         st.page_link("Home.py", label="Home", icon="🏠")
         st.page_link("pages/1_overview.py", label="Overview", icon="🖐")
         st.page_link("pages/2_market_analysis.py", label="Market Analysis", icon="📊")
-        st.page_link("pages/3_portfolio_tracker.py", label="Portfolio Tracker", icon="💰")
-        st.page_link("pages/4_company_profile.py", label="Company Profile", icon="💼")
-        st.page_link("pages/5_chatbot.py", label="ChatBot", icon="💬")
-        st.page_link("pages/6_settings.py", label="Settings", icon="🛠")
+        st.page_link("pages/3_company_profile.py", label="Company Profile", icon="💼")
+        st.page_link("pages/4_portfolio_tracker.py", label="Portfolio Tracker", icon="💰", disabled=is_disabled)
+        st.page_link("pages/5_chatbot.py", label="ChatBot", icon="💬", disabled=is_disabled)
+        st.page_link("pages/6_settings.py", label="Settings", icon="🛠", disabled=is_disabled)
         st.page_link("pages/7_about_us.py", label="About_Us", icon="📣")
         
         

@@ -19,6 +19,7 @@ def render_sidebar():
         st.page_link("pages/3_company_profile.py", label="Company Profile", icon="💼")
         st.page_link("pages/4_portfolio_tracker.py", label="Portfolio Tracker", icon="💰", disabled=is_disabled)
         st.page_link("pages/5_chatbot.py", label="ChatBot", icon="💬", disabled=is_disabled)
+        st.page_link("pages/8_swing_trading.py", label="Swing Trading", icon="🏆")
         st.page_link("pages/6_settings.py", label="Settings", icon="🛠", disabled=is_disabled)
         st.page_link("pages/7_about_us.py", label="About_Us", icon="📣")
         

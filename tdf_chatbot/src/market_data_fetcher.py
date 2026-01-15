@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime as dt, timedelta as td
 from time import sleep
+import concurrent.futures
 
 from tdf_utility.trading.nse_api import NSE_API, get_nse_india_vix, get_nse_market_status_daily, get_nifty_heatmap
 from tdf_utility.trading.ep_api import fetch_fii_dii_data
@@ -77,3 +78,111 @@ def sourcing_nifty_index_data():
     nifty_heatmap_df["Company Profile"] = nifty_heatmap_df["symbol"].apply(lambda x: f"/company_profile?ticker_symbol={x}")
     # st.sidebar.write("Data is fetched and stored into cache")
     return nifty_heatmap_df
+
+
+@st.cache_data(ttl=3000, show_spinner="Fetching Market Data...")
+def company_viz_df(company_ticker, from_dt:str=None, to_dt:str=None):
+    company_details = "https://www.nseindia.com/api/NextApi/apiClient/GetQuoteApi?functionName=getSymbolData&marketType=N&series=EQ&symbol=BHARTIARTL"
+
+    company_1y_chart_data = "https://www.nseindia.com/api/NextApi/apiClient/GetQuoteApi?functionName=getSymbolChartData&symbol=BHARTIARTLEQN&days=1Y"
+    
+    
+    nse_api = NSE_API()
+    df_list = list()
+
+    company_name_url = f"api/NextApi/apiClient/GetQuoteApi?functionName=getSymbolName&symbol={company_ticker}"
+    company_name = nse_api._get_data(company_name_url).get("companyName")
+
+    company_yearwise_url = f"api/NextApi/apiClient/GetQuoteApi?functionName=getYearwiseData&symbol={company_ticker}QN"
+    # company_yearwise_data = 
+    
+
+    if from_dt and to_dt:
+        to_dt = dt.strptime(to_dt, '%d-%m-%Y')
+        from_dt = dt.strptime(from_dt, '%d-%m-%Y')
+        company_corp_action_url = f"api/NextApi/apiClient/GetQuoteApi?functionName=getCorpAction&symbol={company_ticker}&type=W&marketApiType=equities&ex_from_date={from_dt}&ex_to_date={to_dt}"
+    else:
+        to_dt = dt.now()
+        from_dt = to_dt - td(days=365)
+        company_corp_action_url = f"api/NextApi/apiClient/GetQuoteApi?functionName=getCorpAction&symbol={company_ticker}&type=W&marketApiType=equities&ex_from_date={from_dt.strftime("%d-%m-%Y")}&ex_to_date={to_dt.strftime("%d-%m-%Y")}"
+
+    while from_dt < to_dt:
+        from_dt_30 =  (to_dt - td(days=30))
+        company_historical_tradedata_url = f'api/NextApi/apiClient/GetQuoteApi?functionName=getHistoricalTradeData&symbol={company_ticker}&series=EQ&fromDate={from_dt_30.strftime("%d-%m-%Y")}&toDate={to_dt.strftime("%d-%m-%Y")}'
+        # print(from_dt_30, to_dt)
+        # print(dynamic_url)
+        company_trade_data = nse_api._get_data(company_historical_tradedata_url)
+        df_list.append(pd.DataFrame(company_trade_data))
+        # print(from_dt_30, to_dt)
+        to_dt = (from_dt_30 - td(days=1))
+        
+    company_trade_data_df = pd.concat(df_list[::-1], ignore_index=True)
+    company_trade_data_df["Date"] = pd.to_datetime(company_trade_data_df.get("mtimestamp"), format='%d-%b-%Y')
+    company_trade_data_df.rename(columns={"chSymbol": "Symbol", 
+                                          "chOpeningPrice": "Open",
+                                          "chTradeHighPrice": "High",
+                                          "chTradeLowPrice": "Low",
+                                          "chClosingPrice": "Close",
+                                          "chPreviousClsPrice": "Prev Close",
+                                          "chLastTradedPrice": "LTP",
+                                          "vwap": "VWAP",
+                                          "chTotTradedQty": "Volume",	
+                                          "chTotTradedVal": "Turnover",	
+                                          "chTotalTrades": "Transactions",
+                                          "ch52WeekHighPrice": "52 Week High",
+                                          "ch52WeekLowPrice": "52 Week Low"}, inplace=True)
+    company_trade_data_df = company_trade_data_df.loc[:, ["Date", "Symbol", "Open", "High", "Low", "Close", "Prev Close", "LTP", "VWAP", "Volume", "Turnover", "Transactions", "52 Week High", "52 Week Low"]]
+    company_trade_data_df = company_trade_data_df.sort_values(by='Date')
+    company_trade_data_df.reset_index(drop=True, inplace=True)
+    company_trade_data_df['7_DMA'] = company_trade_data_df['Close'].rolling(window=7).mean()
+    company_trade_data_df['21_DMA'] = company_trade_data_df['Close'].rolling(window=21).mean()
+    
+    # company_df = pd.DataFrame(nse_api._get_data(company_url))
+    company_corp_action_df = pd.DataFrame(nse_api._get_data(company_corp_action_url))
+    return company_name, company_trade_data_df, company_corp_action_df
+
+
+
+def company_df(symbol):
+    nse_api = NSE_API()
+    df_list = list()
+    to_dt = dt.now()
+    from_dt = to_dt - td(days=365)
+    # company_name_url = f"api/NextApi/apiClient/GetQuoteApi?functionName=getSymbolName&symbol={symbol}"
+    # company_name = nse_api._get_data(company_name_url).get("companyName")
+    while from_dt < to_dt:
+        from_dt_90 =  (to_dt - td(days=90))
+        company_historical_tradedata_url = f'api/NextApi/apiClient/GetQuoteApi?functionName=getHistoricalTradeData&symbol={symbol}&series=EQ&fromDate={from_dt_90.strftime("%d-%m-%Y")}&toDate={to_dt.strftime("%d-%m-%Y")}'
+        company_trade_data = nse_api._get_data(company_historical_tradedata_url)
+        df_list.append(pd.DataFrame(company_trade_data))
+        to_dt = (from_dt_90 - td(days=1))
+    company_trade_data_df = pd.concat(df_list[::-1], ignore_index=True)
+    company_trade_data_df["Date"] = pd.to_datetime(company_trade_data_df.get("mtimestamp"), format='%d-%b-%Y')
+    company_trade_data_df.reset_index(drop=True, inplace=True)
+    
+    # company_trade_data_df["Low_Date"] = company_trade_data_df.loc[company_trade_data_df['chTradeLowPrice'].idxmin()]['Date']
+    # company_trade_data_df["High_Date"] = company_trade_data_df.loc[company_trade_data_df['chTradeHighPrice'].idxmax()]['Date']
+    # chTradeHighPrice, chTradeLowPrice
+    return company_trade_data_df
+
+
+@st.cache_data(ttl=3000, show_spinner="Fetching Market Data...")
+def get_nifty_index_data(nifty_index_symbol):
+    nse_api = NSE_API()
+    nifty_index_url = f"api/equity-stockIndices?index={nifty_index_symbol}"
+    nifty_index_data = nse_api._get_data(nifty_index_url).get("data")
+    nifty_index_stocks_df = pd.DataFrame(nifty_index_data)
+    nifty_index_stocks_df = nifty_index_stocks_df.loc[(nifty_index_stocks_df["priority"] != 1), ["symbol", "open", "dayHigh", "dayLow", "lastPrice",
+                            "previousClose", "change", "pChange", "yearHigh", "yearLow", "totalTradedVolume", "totalTradedValue", 
+                            "nearWKH", "nearWKL", "perChange365d", "perChange30d"]]
+    nifty_index_stocks_df.rename(columns={"symbol": "Symbol", "open": "Open", "dayHigh": "High", "dayLow": "Low", "lastPrice": "Close",
+                            "previousClose": "Prev Close", "change": "Change", "pChange": "P Change", "yearHigh": "52Week High", 
+                            "yearLow": "52Week Low", "totalTradedVolume": "Volume", "totalTradedValue": "Traded Value"}, 
+                            inplace=True)
+    nifty_index_stocks_list = nifty_index_stocks_df['Symbol'].unique().tolist()
+    # st.write(f"nifty_index_stocks_list: {nifty_index_stocks_list}")
+    stock_df = pd.DataFrame()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        stock_df_list = list(executor.map(company_df, nifty_index_stocks_list))
+    stock_df = pd.concat(stock_df_list)
+    return nifty_index_stocks_df, stock_df

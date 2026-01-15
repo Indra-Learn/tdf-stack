@@ -301,7 +301,7 @@ for i, tab in enumerate(tabs):
         if len(edited_df.selection["rows"]) > 0:
             # Get the selected row index
             selected_index = edited_df.selection["rows"][0]
-            selected_ticker = df.iloc[selected_index]["Symbol"]
+            selected_ticker = df.iloc[selected_index]["Symbol"]  # check code bug, why df
             
             # # 3. Pass Data & Switch Page
             # # We store the ticker in session_state so the next page can read it

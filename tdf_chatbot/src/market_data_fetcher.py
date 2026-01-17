@@ -2,10 +2,19 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime as dt, timedelta as td
 from time import sleep
+from functools import partial
 import concurrent.futures
+# import logging
+
+# # uncomment below block if run from local
+# import os, sys
+# absolute_parent = os.path.abspath(os.path.join(os.getcwd()))
+# sys.path.append(absolute_parent)
 
 from tdf_utility.trading.nse_api import NSE_API, get_nse_india_vix, get_nse_market_status_daily, get_nifty_heatmap
 from tdf_utility.trading.ep_api import fetch_fii_dii_data
+
+# logging.basicConfig(level=logging.INFO)
 
 def _load_graph_data_to_df(object: dict):
     identifier = object.get('data').get('identifier')
@@ -109,11 +118,8 @@ def company_viz_df(company_ticker, from_dt:str=None, to_dt:str=None):
     while from_dt < to_dt:
         from_dt_30 =  (to_dt - td(days=30))
         company_historical_tradedata_url = f'api/NextApi/apiClient/GetQuoteApi?functionName=getHistoricalTradeData&symbol={company_ticker}&series=EQ&fromDate={from_dt_30.strftime("%d-%m-%Y")}&toDate={to_dt.strftime("%d-%m-%Y")}'
-        # print(from_dt_30, to_dt)
-        # print(dynamic_url)
         company_trade_data = nse_api._get_data(company_historical_tradedata_url)
         df_list.append(pd.DataFrame(company_trade_data))
-        # print(from_dt_30, to_dt)
         to_dt = (from_dt_30 - td(days=1))
         
     company_trade_data_df = pd.concat(df_list[::-1], ignore_index=True)
@@ -142,36 +148,61 @@ def company_viz_df(company_ticker, from_dt:str=None, to_dt:str=None):
     return company_name, company_trade_data_df, company_corp_action_df
 
 
-
 def company_df(symbol):
     nse_api = NSE_API()
     df_list = list()
     to_dt = dt.now()
-    from_dt = to_dt - td(days=365)
+    from_dt = to_dt - td(days=90)
+    
+    if "&" in symbol:
+        safe_symbol = symbol.replace("&", "%26")
+    else:
+        safe_symbol = symbol
+
     # company_name_url = f"api/NextApi/apiClient/GetQuoteApi?functionName=getSymbolName&symbol={symbol}"
     # company_name = nse_api._get_data(company_name_url).get("companyName")
     while from_dt < to_dt:
-        from_dt_90 =  (to_dt - td(days=90))
-        company_historical_tradedata_url = f'api/NextApi/apiClient/GetQuoteApi?functionName=getHistoricalTradeData&symbol={symbol}&series=EQ&fromDate={from_dt_90.strftime("%d-%m-%Y")}&toDate={to_dt.strftime("%d-%m-%Y")}'
+        from_dt_90 =  (to_dt - td(days=30))
+        company_historical_tradedata_url = f'api/NextApi/apiClient/GetQuoteApi?functionName=getHistoricalTradeData&symbol={safe_symbol}&series=EQ&fromDate={from_dt_90.strftime("%d-%m-%Y")}&toDate={to_dt.strftime("%d-%m-%Y")}'
         company_trade_data = nse_api._get_data(company_historical_tradedata_url)
         df_list.append(pd.DataFrame(company_trade_data))
         to_dt = (from_dt_90 - td(days=1))
     company_trade_data_df = pd.concat(df_list[::-1], ignore_index=True)
     company_trade_data_df["Date"] = pd.to_datetime(company_trade_data_df.get("mtimestamp"), format='%d-%b-%Y')
+    company_trade_data_df.rename(columns={'chSymbol': 'Symbol', 'chSeries': 'Series', 'chPreviousClsPrice': 'Prev Close', 
+        'chOpeningPrice': 'Open', 'chTradeHighPrice': 'High', 'chTradeLowPrice': 'Low', 'chLastTradedPrice': 'LTP',
+       'chClosingPrice': 'Close', 'vwap': 'VWAP', 'chTotTradedQty': 'Volumn', 'chTotTradedVal': 'Traded Value',
+       'chTotalTrades': 'Transactions', 'ch52WeekHighPrice': '52Week High', 'ch52WeekLowPrice': '52Week Low'}, inplace=True)
+    company_trade_data_df = company_trade_data_df.sort_values(by='Date', ascending=False)
     company_trade_data_df.reset_index(drop=True, inplace=True)
+
+    # Price Information
+    company_price_info_url = f"api/NextApi/apiClient/GetQuoteApi?functionName=getSymbolData&marketType=N&series=EQ&symbol={safe_symbol}"
     
-    # company_trade_data_df["Low_Date"] = company_trade_data_df.loc[company_trade_data_df['chTradeLowPrice'].idxmin()]['Date']
-    # company_trade_data_df["High_Date"] = company_trade_data_df.loc[company_trade_data_df['chTradeHighPrice'].idxmax()]['Date']
-    # chTradeHighPrice, chTradeLowPrice
+    company_price_info_data = nse_api._get_data(company_price_info_url).get("equityResponse")[0].get("priceInfo")
+    company_trade_data_df["52Week High Date"] = company_price_info_data.get("yearHightDt")
+    company_trade_data_df["52Week Low Date"] = company_price_info_data.get("yearLowDt")
+
+    company_trade_data_df["52Week High Date"] = pd.to_datetime(company_trade_data_df.get("52Week High Date"), format='%d-%b-%Y %H:%M:%S').dt.date
+    company_trade_data_df["52Week Low Date"] = pd.to_datetime(company_trade_data_df.get("52Week Low Date"), format='%d-%b-%Y %H:%M:%S').dt.date
+    
     return company_trade_data_df
 
 
 @st.cache_data(ttl=3000, show_spinner="Fetching Market Data...")
 def get_nifty_index_data(nifty_index_symbol):
     nse_api = NSE_API()
+
+    # Market Turnover
+    # market_time = nse_api._get_data("api/NextApi/dynamicApi?functionName=getCurrentTime")
+
+    # Index Data
     nifty_index_url = f"api/equity-stockIndices?index={nifty_index_symbol}"
-    nifty_index_data = nse_api._get_data(nifty_index_url).get("data")
-    nifty_index_stocks_df = pd.DataFrame(nifty_index_data)
+    nifty_index_data = nse_api._get_data(nifty_index_url)
+
+    nifty_date = dt.strptime(nifty_index_data.get("timestamp"), "%d-%b-%Y %H:%M:%S").date()
+
+    nifty_index_stocks_df = pd.DataFrame(nifty_index_data.get("data"))
     nifty_index_stocks_df = nifty_index_stocks_df.loc[(nifty_index_stocks_df["priority"] != 1), ["symbol", "open", "dayHigh", "dayLow", "lastPrice",
                             "previousClose", "change", "pChange", "yearHigh", "yearLow", "totalTradedVolume", "totalTradedValue", 
                             "nearWKH", "nearWKL", "perChange365d", "perChange30d"]]
@@ -179,10 +210,19 @@ def get_nifty_index_data(nifty_index_symbol):
                             "previousClose": "Prev Close", "change": "Change", "pChange": "P Change", "yearHigh": "52Week High", 
                             "yearLow": "52Week Low", "totalTradedVolume": "Volume", "totalTradedValue": "Traded Value"}, 
                             inplace=True)
+    
+    # bins = [0, 50, 100, 250, 500]
+    # labels = ['Nifty 50', 'Nifty Next50', 'Nifty Midcap 150', 'Others']
+    # nifty_index_stocks_df['Nifty Index'] = pd.cut(nifty_index_stocks_df.index, bins=bins, labels=labels, right=False)
+    nifty_index_stocks_df['Nifty Index'] = nifty_index_symbol
     nifty_index_stocks_list = nifty_index_stocks_df['Symbol'].unique().tolist()
-    # st.write(f"nifty_index_stocks_list: {nifty_index_stocks_list}")
+    
     stock_df = pd.DataFrame()
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         stock_df_list = list(executor.map(company_df, nifty_index_stocks_list))
     stock_df = pd.concat(stock_df_list)
-    return nifty_index_stocks_df, stock_df
+    stock_df["Date"] = stock_df["Date"].dt.date
+    # stock_df["52Week High Date"] = stock_df["52Week High Date"].dt.date
+    # stock_df["52Week Low Date"] = stock_df["52Week Low Date"].dt.date
+    stock_df = stock_df.loc[:,['Symbol', 'Date', 'Prev Close', 'Open', 'High', 'Low', 'LTP', 'Close', 'VWAP', 'Volumn', 'Traded Value', 'Transactions', '52Week High', '52Week High Date', '52Week Low', '52Week Low Date']]
+    return nifty_date, nifty_index_stocks_df, stock_df

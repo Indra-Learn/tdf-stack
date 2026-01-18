@@ -57,6 +57,23 @@ https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi?functionName=getI
 # format = '%Y-%m-%d%H:%M:%S'
 # df['Datetime'] = pd.to_datetime(df['date'] + df['time'].astype("string"), format=format)
 series_list = [series for col, series in df.items()]
+
+
+most active contracts by oi: https://www.nseindia.com/api/NextApi/apiClient/GetQuoteApi?functionName=getDerivativesMostActive&symbol=RELIANCE&callType=O
+most active puts: https://www.nseindia.com/api/NextApi/apiClient/GetQuoteApi?functionName=getDerivativesMostActive&symbol=RELIANCE&callType=P
+most active calls: https://www.nseindia.com/api/NextApi/apiClient/GetQuoteApi?functionName=getDerivativesMostActive&symbol=RELIANCE&callType=C
+overall market data: https://www.nseindia.com/api/NextApi/apiClient/GetQuoteApi?functionName=getSymbolData&marketType=N&series=EQ&symbol=RELIANCE
+get company name: https://www.nseindia.com/api/NextApi/apiClient/GetQuoteApi?functionName=getSymbolName&symbol=RELIANCE
+* metadata: https://www.nseindia.com/api/NextApi/apiClient/GetQuoteApi?functionName=getMetaData&symbol=RELIANCE
+history of future stock data: https://www.nseindia.com/api/NextApi/apiClient/GetQuoteApi?functionName=getDerivativesHistoricalData&symbol=RELIANCE&instrumentType=FUTSTK&year=&expiryDate=&strikePrice=&optionType=&fromDate=18-12-2025&toDate=18-01-2026
+get expiry date: https://www.nseindia.com/api/NextApi/apiClient/GetQuoteApi?functionName=getStrPriceExpiryBySymbol&symbol=RELIANCE&fromDate=18-12-2025&toDate=18-01-2026
+
+
+
+get top 10 stocks: https://www.nseindia.com/api/NextApi/apiClient/GetQuoteApi?functionName=getTopTenStock
+get index data: https://www.nseindia.com/api/NextApi/apiClient?functionName=getIndexData&&type=All
+
+
 """
 
 # Fetch data from NSE API

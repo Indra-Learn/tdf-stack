@@ -82,7 +82,7 @@ tdf-stack with Streamlit, Fastapi and N8N applications
     source ./.venv/bin/activate
 
     docker compose up -d --build
-    docker down
+    docker compose down
 
     # docker image ls
     # docker ps -a

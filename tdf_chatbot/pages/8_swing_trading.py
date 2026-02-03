@@ -2,7 +2,7 @@
 import streamlit as st
 from src.streamlit_side_navbar import render_sidebar
 from src.market_data_fetcher import reits_invits
-from tdf_chatbot.src.async_market_data_fetcher import nifty_500_index_list, streamlit_market_overview, streamlit_nifty_stock_screener
+from src.async_market_data_fetcher import nifty_500_index_list, streamlit_market_overview, streamlit_nifty_stock_screener
 
 st.set_page_config(page_title="Overview", layout="wide")
 

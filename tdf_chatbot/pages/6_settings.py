@@ -60,3 +60,34 @@ with st.container(border=True):
             except Exception:
                 st.error("API Key Missing")
 
+    # Shoonya
+    col1, col2, col3, col4 = st.columns([1, 3, 2, 2])
+    is_shoonya_connected = st.session_state.shoonya is not None
+    with col1:
+        if is_shoonya_connected:
+            st.markdown("### ✅")
+        else:
+            st.markdown("### ❌")
+    with col2:
+        st.markdown("## Finvasia Shoonya")
+    with col3:
+        if is_shoonya_connected:
+            st.caption("Status: **Connected**")
+            st.caption("Token Valid")
+        else:
+            st.caption("Status: **Disconnected**")
+            st.caption("Action Required")
+    with col4:
+        if is_shoonya_connected:
+            # If connected, show Logout
+            if st.button("Unlink Account"):
+                st.session_state.shoonya = None
+                st.rerun()
+        else:
+            # If disconnected, show Login Link
+            try:
+                login_url = "https://shoonya.finvasia.com/ShoonyaLogin/"
+                if st.button("🔐 Login to Shoonya", type="primary"):
+                    st.markdown(f'<meta http-equiv="refresh" content="0;url={login_url}">', unsafe_allow_html=True)
+            except Exception:
+                st.error("API Key Missing")

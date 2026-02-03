@@ -64,6 +64,16 @@ tdf-stack with Streamlit, Fastapi and N8N applications
     4. second, create "Client", application_type(Web Application), name(tdf_client), redirect_uri(https://thedatafestai.com/auth_callback)
     5. 
 
+5. Shoonya Api
+    ```sh
+    cd tdf_utility/trading/ 
+    mkdir shoonya_package
+    
+    # download .whl file from "https://github.com/Shoonya-Dev/ShoonyaApi-py/blob/master/dist/NorenRestApi-0.0.30-py2.py3-none-any.whl"
+    
+    pip install tdf_utility/trading/shoonya_package/NorenRestApi-0.0.30-py2.py3-none-any.whl
+    ```
+
     
 ### Daily Activity after above "One-Time Activity" is done -
 

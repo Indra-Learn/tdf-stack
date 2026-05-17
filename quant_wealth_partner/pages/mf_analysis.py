@@ -94,18 +94,20 @@ with tab3:
     col1, col2, col3 = st.columns([1, 1, 3])
     with col1:
         mf_category = st.selectbox("Select Mutual Fund Category", options=amfi_category_subcategory_df["category_name"].unique())
+        mf_category_int = int(amfi_category_subcategory_df[amfi_category_subcategory_df["category_name"] == mf_category]["category_id"].iloc[0])
     with col2:
         mf_sub_category = st.selectbox("Select Mutual Fund Sub-Category", options=amfi_category_subcategory_df[amfi_category_subcategory_df["category_name"] == mf_category]["sub_category_name"].unique())
-    st.write(f"You selected: **{mf_category}** > **{mf_sub_category}**")
-    # sample_df = mf_data.get_amfi_fund_performance(maturityType=1, 
-    #                                                              category=mf_category, # pass int instead of name
-    #                                                              subCategory=mf_sub_category, 
-    #                                                              mfid=0, 
-    #                                                              reportDate="27-Mar-2026")
+        mf_sub_category_int = int(amfi_category_subcategory_df[(amfi_category_subcategory_df["category_name"] == mf_category) & (amfi_category_subcategory_df["sub_category_name"] == mf_sub_category)]["sub_category_id"].iloc[0])
+    st.write(f"You selected: **{mf_category}({mf_category_int})** > **{mf_sub_category}({mf_sub_category_int})**")
+    filtered_amfi_fund_performance_df = mf_data.get_amfi_fund_performance(maturityType=1, # Open ended funds
+                                                category=mf_category_int, # pass int instead of name
+                                                subCategory=mf_sub_category_int, 
+                                                mfid=0, 
+                                                reportDate="27-Mar-2026")
     # st.write("sample_df:")
     # st.dataframe(sample_df)
     
-    st.dataframe(amfi_fund_performance_df.loc[:, ['schemeName', 'preNavDate', 'preNavRegular', 'preNavDirect', 'benchmark', 'navDate', 'navRegular', 'navDirect', 'dailyAUM', 'return1YearRegular', 'return1YearDirect', 'return3YearRegular', 'return3YearDirect', 'return5YearRegular', 'return5YearDirect']])
+    st.dataframe(filtered_amfi_fund_performance_df.loc[:, ['schemeName', 'preNavDate', 'preNavRegular', 'preNavDirect', 'benchmark', 'navDate', 'navRegular', 'navDirect', 'dailyAUM', 'return1YearRegular', 'return1YearDirect', 'return3YearRegular', 'return3YearDirect', 'return5YearRegular', 'return5YearDirect']])
 
 
 st.caption("Note: The above information is sourced from the AMFI website and may be subject to change. Please refer to the official AMFI website for the most up-to-date information.")

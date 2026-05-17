@@ -1,0 +1,91 @@
+{
+    "mf_general_info": [
+        {"Investor Service FAQs": "https://www.amfiindia.com/investor/become-mf-distributor?zoneName=InvestorService"}
+    ],
+
+    "mf_selection_parameters": [
+        {
+            "parameter": "Total Expense Ratio (TER)",
+            "description": "Expense ratio represents the annual fund operating expenses of a scheme, expressed as a percentage of the fund’s daily net assets. Operating expenses of a scheme are administration, management, advertising related expenses, etc.",
+            "importances": [
+                "TER has a direct bearing on a scheme’s NAV – the lower the expense ratio of a scheme, the higher the NAV. Thus, TER is an important parameter while selecting a mutual fund scheme.",
+                "As per the current SEBI Regulations, mutual funds are required to disclose the TER of all schemes on a daily basis on their websites as well as AMFI’s website."
+            ],
+            "source_urls": [
+                "https://www.amfiindia.com/investor/knowledge-center-info?zoneName=expenseRatio"
+            ]
+        },
+        {
+            "parameter": "Net Asset Value (NAV)",
+            "description": "",
+            "importances": [],
+            "source_urls": [
+                "https://www.amfiindia.com/investor/knowledge-center-info?zoneName=NetAssetValueNAV"
+            ]
+        },
+        {
+            "parameter": "others",
+            "description": "",
+            "importances": [],
+            "source_urls": ["https://www.amfiindia.com/investor/become-mf-distributor?zoneName=InvestorService"]
+        }
+    ],
+
+    "different_asset_classes": [
+        {"product": "Equity", "details": [{"instrument": "Stocks"}, {"instrument": "Derivatives"}, {"instrument": "ETFs"}]}, 
+        {"product": "Debts/Bonds", "details": [{"instrument": "Government Bonds"}, {"instrument": "Corporate Bonds"}]}, 
+        {"product": "Commodity", "details": [{"instrument": "Gold"}, {"instrument": "Silver"},{"instrument": "Crude Oil"}]}, 
+        {"product": "Real Estate", "details": [{"instrument": "Residential Properties"}, {"instrument": "Commercial Properties"}, {"instrument": "Plots/Lands"}]},
+        {"product": "Overseas Markets", "details": [{"instrument": "US Market"}, {"instrument": "European Market"}]},
+        {"product": "Traditional Savings", "details": [{"instrument": "Fixed Deposit"}, {"instrument": "PPF"}, {"instrument": "NPS"}]},
+        {"product": "Others", "details": [{"instrument": "Invoice Discounting"}, {"instrument": "Unlisted Securities"}, {"instrument": "Peer-to-Peer Lending"}]},
+        {"product": "Cryptocurrency", "details": [{"instrument": "Bitcoin"}, {"instrument": "Ethereum"}]}
+    ],
+
+    "why_to_invest": [
+        {"icon": "💰", "title": "Wealth Creation", "description": "Investing allows your money to grow over time"},
+        {"icon": "🚧", "title": "Beat Inflation", "description": "Investing can help preserving the purchasing power of your money"},
+        {"icon": "🔒", "title": "Financial Security", "description": "Investing can provide a source of income and financial security, especially during retirement"},
+        {"icon": "🚀", "title": "Diversification", "description": "Investing in a variety of assets can help spread risk and reduce the impact of market volatility"},
+        {"icon": "🏁", "title": "Achieve Financial Goals", "description": "Whether it's buying a home, funding education, or traveling, investing can help you reach your financial goals faster than saving alone"},
+        {"icon": "🎢", "title": "Take Advantage of Compounding", "description": "Reinvesting your earnings can lead to exponential growth over time, maximizing your returns"},
+        {"icon": "🏔", "title": "Support Innovation and Growth", "description": "Investing in companies and industries you believe in can contribute to economic growth and innovation"}
+    ],
+
+    "factors_to_consider": [
+        {"icon": "🛡️", "title": "Safety", "description": "Assess the risk level of the investment and ensure it aligns with your risk tolerance"},
+        {"icon": "💧", "title": "Liquidity", "description": "Consider how easily you can convert the investment into cash without significant loss of value"},
+        {"icon": "📈", "title": "Returns", "description": "Evaluate the potential returns of the investment and compare it to other options"},
+        {"icon": "✂️", "title": "Manage Risks", "description": "Inflation Risk, Liquidity Risk, Credit Risk, Market Risk, Price Risk, Interest Rate Risk, Currency Risk, Political Risk, Regulatory Risk"},
+        {"icon": "⚙️", "title": "Convenience", "description": "Consider the ease of managing the investment, including account access and customer support"},
+        {"icon": "🎟️", "title": "Ticket Size", "description": "Determine the minimum investment amount required and ensure it fits within your budget"},
+        {"icon": "🧾", "title": "Taxability", "description": "Understand the tax implications of the investment, including any tax benefits or liabilities"}
+    ],
+
+    "risk": {
+        "risks": {
+            "Investment Risk": "The possibility of losing some or all of the original investment due to market fluctuations, economic downturns, or other factors.",
+            "Inflation Risk": "The risk that the purchasing power of your money will decrease over time due to rising prices, which can erode the real value of your returns.",
+            "Liquidity Risk": "The risk that you may not be able to sell an investment quickly without significantly affecting its price, which can lead to losses if you need to access your money urgently.",
+            "Credit Risk": "The risk that a borrower or issuer of a security may default on their obligations, leading to a loss of principal or interest for the investor.",
+            "Market Risk": "The risk that the overall market or a specific sector will decline, affecting the value of your investments regardless of their individual performance.",
+            "Price Risk": "The risk that the price of an investment will fluctuate, which can lead to losses if you sell at a lower price than you bought.",
+            "Interest Rate Risk": "The risk that changes in interest rates will negatively impact the value of fixed-income investments, such as bonds.",
+            "Currency Risk": "The risk that changes in exchange rates will affect the value of investments denominated in foreign currencies, potentially leading to losses when converting back to your home currency.",
+            "Political Risk": "The risk that political events, such as changes in government, policy decisions, or geopolitical tensions, will negatively impact the value of your investments.",
+            "Regulatory Risk": "The risk that changes in laws, regulations, or government policies will adversely affect the value of your investments, such as increased taxes, restrictions on certain industries, or changes in financial regulations."
+        },
+        "risk_management_strategies": {
+            "Avoid": "Choosing not to invest in certain high-risk assets or markets to protect your capital from potential losses.",
+            "Manage": "To take an investment position to benefit from some event/ market fluctuations",
+            "Diversification": "Spreading your investments across different asset classes, sectors, and geographic regions to reduce the impact of any single investment's poor performance on your overall portfolio.",
+            "Asset Allocation": "Determining the appropriate mix of asset classes (e.g., stocks, bonds, cash) based on your risk tolerance, investment goals, and time horizon to balance risk and return.",
+            "Regular Portfolio Rebalancing": "Periodically reviewing and adjusting your portfolio to maintain your desired asset allocation and risk level as market conditions change."
+        },
+        "risk profiling": {
+            "The need to take risk": "",
+            "The willingness to take risk": "",
+            "The ability to take risk": ""
+        }
+    }
+}

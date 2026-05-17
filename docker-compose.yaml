@@ -10,13 +10,24 @@ services:
     ports:
       - "8000:8000"
 
-  chatbot:
-    container_name: tdfchatbot
+  # chatbot:
+  #   container_name: tdfchatbot
+  #   build: 
+  #     context: .
+  #     dockerfile: tdf_chatbot/Dockerfile
+  #   env_file:
+  #     - ./.env
+  #   command: "streamlit run --server.port 8501 Home.py"
+  #   ports:
+  #     - "8501:8501"
+
+  quant_wealth_partner:
+    container_name: tdfquantwealthpartner
     build: 
       context: .
-      dockerfile: tdf_chatbot/Dockerfile
+      dockerfile: quant_wealth_partner/Dockerfile
     env_file:
       - ./.env
-    command: "streamlit run --server.port 8501 Home.py"
+    command: "streamlit run --server.port 8502 streamlit_app.py"
     ports:
-      - "8501:8501"
+      - "8502:8502"

@@ -45,7 +45,7 @@ def login_button():
     #         </button>
     #     </a>
     # ''', unsafe_allow_html=True)
-    st.link_button("Sign in with Google", uri, type="primary", use_container_width=True)
+    st.link_button("Sign in with Google", uri, type="primary", width='stretch')
 
 
 def get_current_user():

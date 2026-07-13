@@ -209,13 +209,13 @@ col5.metric("Crude Oil", f"₹{latest_data['Crude Oil']:.2f}", f"{crude_oil_diff
 
 st.divider()
 st.markdown("### [Nifty 50 Trends](https://www.nseindia.com/index-tracker/NIFTY%2050)")
-st.plotly_chart(fig_nifty_indiavix, use_container_width=True)
+st.plotly_chart(fig_nifty_indiavix, width='stretch')
 st.divider()
-st.plotly_chart(fig_nifty_fii_dii, use_container_width=True)
+st.plotly_chart(fig_nifty_fii_dii, width='stretch')
 st.divider()
 st.markdown("### [Nifty Commodities Spot Price](https://www.nseindia.com/historical-spot-price)")
-st.plotly_chart(fig_nifty_gold, use_container_width=True)
-st.plotly_chart(fig_crudeoil, use_container_width=True)
+st.plotly_chart(fig_nifty_gold, width='stretch')
+st.plotly_chart(fig_crudeoil, width='stretch')
 st.divider()
 
 # "Nifty Next 50", "Nifty Midcap 150", "Nifty Smallcap 250", "Others"
@@ -290,7 +290,7 @@ for i, tab in enumerate(tabs):
             },
             # disabled=["Symbol", "Last Price", "Change %", "High", "Low", "Volume", "Value", "VWAP"],
             hide_index=True,
-            use_container_width=True,
+            width='stretch',
             height=500,
             key=f"editor_{indices[i]}", # Unique key for each tab
             selection_mode="single-row",

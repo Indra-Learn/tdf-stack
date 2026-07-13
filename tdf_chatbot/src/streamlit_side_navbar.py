@@ -22,6 +22,7 @@ def render_sidebar():
         st.page_link("pages/9_stock_market_fundamentals.py", label="Market Fundamentals", icon="🦚")
         st.page_link("pages/8_swing_trading.py", label="Swing Trading", icon="🏆")
         st.page_link("pages/10_Mahesh_Kaushik_Strategy.py", label="Mahesh Kaushik Sir Strategies", icon="🏆")
+        st.page_link("pages/11_mutual_fund.py", label="Mutual Funds", icon="💰")
         st.page_link("pages/6_settings.py", label="Settings", icon="🛠", disabled=is_disabled)
         st.page_link("pages/7_about_us.py", label="About_Us", icon="📣")
         

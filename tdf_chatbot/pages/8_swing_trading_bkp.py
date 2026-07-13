@@ -26,7 +26,7 @@ for i, tab in enumerate(tabs):
 
             selected_df1 = st.dataframe(nifty_index_stocks_df,
                             # hide_index=True,
-                            use_container_width=True,
+                            width='stretch',
                             height=300)
 
             st.divider()
@@ -34,7 +34,7 @@ for i, tab in enumerate(tabs):
 
             selected_df = st.dataframe(stock_yearly_df.loc[stock_yearly_df['Date'] == nifty_date, ["Symbol", "Date", "Close", "52Week High", "52Week High Date", "52Week Low", "52Week Low Date"]],
                             # hide_index=True,
-                            use_container_width=True,
+                            width='stretch',
                             height=300,
                             key=f"editor_{indices[i]}", # Unique key for each tab
                             selection_mode="single-row",
@@ -49,11 +49,11 @@ for i, tab in enumerate(tabs):
                 st.markdown(f"### 🚀 Swing Trading Strategy for {selected_ticker}")
 
                 st.dataframe(stock_monthly_df.loc[stock_monthly_df['Symbol'] == selected_ticker],
-                            use_container_width=True,
+                            width='stretch',
                             height=300)
                 st.divider()
                 st.dataframe(stock_yearly_df.loc[stock_yearly_df['Symbol'] == selected_ticker],
-                            use_container_width=True,
+                            width='stretch',
                             height=300)
             else:
                 st.markdown("### 🚀 Select the stock from above table for Swing Trading")

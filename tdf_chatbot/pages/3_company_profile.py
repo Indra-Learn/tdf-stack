@@ -76,7 +76,7 @@ if ticker_symbol:
         legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01)
     )
 
-    st.plotly_chart(fig_company, use_container_width=True)
+    st.plotly_chart(fig_company, width='stretch')
 
     # --======================================================================================
     # 2. CREATE THE BASE CANDLESTICK CHART
@@ -127,7 +127,7 @@ if ticker_symbol:
     )
 
     # Display in Streamlit
-    st.plotly_chart(fig_company, use_container_width=True)
+    st.plotly_chart(fig_company, width='stretch')
     
 else:
     # st.error("No company selected. Please select a company from the Market Analysis page.")

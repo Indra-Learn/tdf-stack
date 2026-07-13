@@ -87,5 +87,22 @@
             "The willingness to take risk": "",
             "The ability to take risk": ""
         }
+    },
+
+    "admin_page":{
+        "sidebar": {
+            "Mutual Funds (IN)": {
+                "Daily Performance Data": {
+                    "web_url": "https://www.amfiindia.com/otherdata/fund-performance",
+                    "api_url": "https://api.mfapi.in/mf"
+                }, 
+                "Quarterly AUM Data Load": {
+                    "api_url": "https://api.mfapi.in/mf"
+                }
+            }, 
+            "ETFs (IN)": {}, 
+            "Stocks (IN)": {}, 
+            "Future & Options (IN)": {}
+        }
     }
 }

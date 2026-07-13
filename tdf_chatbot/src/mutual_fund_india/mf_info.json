@@ -1,0 +1,33 @@
+{
+    "mf_general_info": [
+        {"Investor Service FAQs": "https://www.amfiindia.com/investor/become-mf-distributor?zoneName=InvestorService"}
+    ],
+
+    "mf_selection_parameters": [
+        {
+            "parameter": "Total Expense Ratio (TER)",
+            "description": "Expense ratio represents the annual fund operating expenses of a scheme, expressed as a percentage of the fund’s daily net assets. Operating expenses of a scheme are administration, management, advertising related expenses, etc.",
+            "importances": [
+                "TER has a direct bearing on a scheme’s NAV – the lower the expense ratio of a scheme, the higher the NAV. Thus, TER is an important parameter while selecting a mutual fund scheme.",
+                "As per the current SEBI Regulations, mutual funds are required to disclose the TER of all schemes on a daily basis on their websites as well as AMFI’s website."
+            ],
+            "source_urls": [
+                "https://www.amfiindia.com/investor/knowledge-center-info?zoneName=expenseRatio"
+            ]
+        },
+        {
+            "parameter": "Net Asset Value (NAV)",
+            "description": "",
+            "importances": [],
+            "source_urls": [
+                "https://www.amfiindia.com/investor/knowledge-center-info?zoneName=NetAssetValueNAV"
+            ]
+        },
+        {
+            "parameter": "others",
+            "description": "",
+            "importances": [],
+            "source_urls": ["https://www.amfiindia.com/investor/become-mf-distributor?zoneName=InvestorService"]
+        }
+    ]
+}

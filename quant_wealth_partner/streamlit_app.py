@@ -24,6 +24,7 @@ logout_page = st.Page(logout, title="Log out", icon=":material/logout:")
 mfd_home = st.Page("pages/mf_home.py", title="Home", icon="🏠")
 settings_page = st.Page("pages/settings.py", title="Settings", icon=":material/settings:")
 market_research_page = st.Page("pages/market_research.py", title="Research Tools", icon="🔍")
+financial_knowledge_base_page = st.Page("pages/financial_knowledge_base.py", title="Financial Knowledge Base", icon="📚")
 data_api_page = st.Page("pages/data_api.py", title="Data Api", icon="🌐")
 mf_analysis_page = st.Page("pages/mf_analysis.py", title="Mutual Fund Analysis", icon="📊")
 etf_analysis_page = st.Page("pages/etf_analysis.py", title="ETF Analysis", icon="📊")
@@ -34,14 +35,14 @@ admin_page = st.Page("pages/admin.py", title="Admin Dashboard", icon="🦸‍♂
 
 account_pages = [mfd_home, settings_page, logout_page]
 product_pages = [market_research_page, data_api_page]
-solution_pages = [mf_analysis_page, etf_analysis_page]
+solution_pages = [financial_knowledge_base_page, mf_analysis_page, etf_analysis_page]
 price_pages = [pricing_page]
 resource_pages = [documents_page, blogs_page]
 admin_pages = [admin_page]
 
-st.header("Quant Wealth Partner")
-st.divider(width="stretch")
-st.logo("static/images/logo.png", icon_image="static/images/icon.png", link="")
+# st.header("Quant Wealth Partner")
+# st.divider(width="stretch")
+# st.logo("static/images/logo.png", icon_image="static/images/icon.png", link="")
 
 top_nav_pages = {}
 if st.session_state.role in ["Researcher", "Admin"]:

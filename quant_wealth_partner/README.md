@@ -20,5 +20,6 @@ This site is dedicated to MFD professionals and Individual Investors, who can do
     ```
 3. Run the app:
     ```sh
-    streamlit run quant_wealth_partner/streamlit_app.py
+    <!-- streamlit run quant_wealth_partner/streamlit_app.py -->
+    streamlit run streamlit_app.py 
     ```

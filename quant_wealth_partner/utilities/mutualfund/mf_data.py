@@ -1,35 +1,17 @@
 import os
-import json
 import requests
 import pandas as pd
 import json
 from datetime import datetime as dt, timedelta as td
-import time
-# from mftool import Mftool
 
-# current_dir = os.path.dirname(os.path.abspath(__file__))
+
 base_dir = os.getcwd()
 
-# mf_obj = Mftool()
-
-# def get_schemes():
-#     scheme_codes = []
-#     scheme_names = []
-#     scheme_aum = []
-    
-#     schemes_dict = mf_obj.get_scheme_codes()
-#     for i, (key, value) in enumerate(schemes_dict.items()):
-#         if i == 0:
-#             continue
-#         scheme_codes.append(key)
-#         scheme_names.append(value)
-#         scheme_aum.append(value.split('-')[0])
-#     schemes_df = pd.DataFrame({"Scheme Code": scheme_codes, 
-#                             "Scheme Name": scheme_names, 
-#                             "Scheme AUM": scheme_aum})
-#     return schemes_df
-
-
+def get_mf_info():
+    mf_info_path = os.path.join(base_dir, "utilities", "mutualfund", "mf_info.json")
+    with open(mf_info_path, "r") as f:
+        mf_info = json.load(f)
+    return mf_info
 
 
 amfi_base_url = "https://www.amfiindia.com/"
@@ -41,122 +23,107 @@ amfi_headers = {
     "Referer": "https://www.amfiindia.com/"
 }
 
-def get_mf_info():
-    mf_info_path = os.path.join(base_dir, "utilities", "mutualfund", "mf_info.json")
-    with open(mf_info_path, "r") as f:
-        mf_info = json.load(f)
-    return mf_info
-
-
-def get_amfi_group_companies():
-    page = 1
-    pageSize = 30
-    full_url = amfi_base_url + f"api/list-of-all-group-companies?page={page}&pageSize={pageSize}"
-    try:
-        response = requests.get(full_url, headers=amfi_headers)
-        all_data = response.json().get("data", [])
-        to_range = int(response.json().get("pagination").get("pageCount")) + 1
-        for i in range(2, to_range):
-            full_url = amfi_base_url + f"api/list-of-all-group-companies?page={i}&pageSize={pageSize}"
-            response = requests.get(full_url, headers=amfi_headers)
-            all_data.extend(response.json().get("data"))
-        df = pd.DataFrame(all_data)
-        return df
-    except requests.exceptions.RequestException as e:
-        print(f"An error occurred: {e}")
-        return False
-
-
-def get_amfi_category_subcategory():
-    # https://www.amfiindia.com/api/latest-nav-category?mfid=all&type=
-
-    full_url = amfi_base_url + "gateway/pollingsebi/api/amfi/getsubcategory"
-    # maturityType = {"Open Ended": 1, "Close Ended": 2}
-    categories = {"Equity": 1, "Debt": 2, "Hybrid": 3, "Solution Oriented": 4, "Other": 5}
-    try:
-        df_list = []
-        for category_name, category_id in categories.items():
-            payload = {
-                "category": category_id
-            }
-            response = requests.post(url=full_url,
-                                    headers=amfi_headers,
-                                    json=payload)
-            response.raise_for_status()
-            data = response.json().get("data", [])
-            # No data found for category:
-            if not data:
-                continue
-            df = pd.DataFrame(data)
-            df.rename(columns={"name": "sub_category_name", "id": "sub_category_id"}, inplace=True)
-            df["category_id"] = category_id
-            df["category_name"] = category_name
-            df_list.append(df.loc[:,["category_name", "category_id", "sub_category_name", "sub_category_id"]])
-        final_df = pd.concat(df_list, ignore_index=True)
-        return final_df
-    except requests.exceptions.RequestException as e:
-        print(f"An error occurred: {e}")
-        return False
-
-
-def get_amfi_mutual_fund_id():
-    # https://www.amfiindia.com/api/amc-adresses?page=1&pageSize=12&MF_ID=53
-    # https://www.amfiindia.com/api/amc-adresses?page=1&pageSize=12
-    # https://www.amfiindia.com/api/amc-adresses?page=1&pageSize=12&MF_ID=53&City=ETAWAH
-    full_url = amfi_base_url + f"api/amc-adresses?page=1&pageSize=1"
-    try:
-        response = requests.get(full_url, headers=amfi_headers)
-        data = response.json().get("amcs")
-        df = pd.DataFrame(data)
-        return df
-    except requests.exceptions.RequestException as e:
-        print(f"An error occurred: {e}")
-        return False
-
-def get_amfi_mutual_fund_scheme(mf_id):
-    full_url = amfi_base_url + f"api/populate-scheme?MF_ID={mf_id}"
-    try:
-        response = requests.get(full_url, headers=amfi_headers)
-        data = response.json()
-        df = pd.DataFrame(data)
-        return df
-    except requests.exceptions.RequestException as e:
-        print(f"An error occurred: {e}")
-        return False
-
-
-def get_amfi_all_mutual_fund_schemes():
-    dfs = []
-    amfi_mutual_fund_id_df = get_amfi_mutual_fund_id()
-    for row in amfi_mutual_fund_id_df.itertuples(index=True, name='Pandas'):
-        # print(row.Index, row.mf_id)
-        df = get_amfi_mutual_fund_scheme(mf_id=48)
-        dfs.append(df)
-    final_df = pd.concat(dfs, ignore_index=True)
-    return final_df
-
-def get_amfi_fund_performance(maturityType=1, category=1, subCategory=1, mfid=0, reportDate="27-Mar-2026"):
-    full_url = amfi_base_url + "gateway/pollingsebi/api/amfi/fundperformance"
-    payload = {
-        "maturityType": maturityType,
-        "category": category,
-        "subCategory": subCategory,
-        "mfid": mfid,
-        "reportDate": reportDate
-    }
-    try:
-        response = requests.post(url=full_url,
-                                headers=amfi_headers,
-                                json=payload)
-        response.raise_for_status()
-        data = response.json()
-        df = pd.DataFrame(data.get("data"))
-        return df
-    except requests.exceptions.RequestException as e:
-        print(f"An error occurred: {e}")
-        return False
+def amfi_api_call(full_url: str, payload: dict = {}, method: str = "GET", headers: dict = amfi_headers):
+    """Generic function to make API calls to AMFI endpoints.
+    Args:
+        full_url (str): The complete URL for the API endpoint.
+        payload (dict): The JSON payload to be sent in the POST request.
+        method (str): The HTTP method to use for the request.
+        headers (dict): The headers to be included in the request. Defaults to amfi_headers.
+    Returns:
+        dict: The JSON response from the API if the call is successful, None otherwise.
+    """
+    if method == "POST":
+        response = requests.post(url=full_url, headers=headers, json=payload)
+    else:
+        response = requests.get(url=full_url, headers=headers)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"API call failed with status code: {response.status_code}")
+        return None
     
 
-if __name__ == "__main__":
-    amfi_category_subcategory_df = get_amfi_category_subcategory()
-    print(amfi_category_subcategory_df.head())
+def get_fund_performance_data():
+    # fund_performance_web_url = "https://www.amfiindia.com/otherdata/fund-performance"
+    is_holiday_api_url = "https://www.amfiindia.com/gateway/pollingsebi/api/amfi/isHoliday"
+    fund_performance_filter_api_url = "https://www.amfiindia.com/gateway/pollingsebi/api/amfi/fundperformancefilters"
+    fund_performance_subcategory_api_url = "https://www.amfiindia.com/gateway/pollingsebi/api/amfi/getsubcategory"
+    fund_performance_api_url = "https://www.amfiindia.com/gateway/pollingsebi/api/amfi/fundperformance"
+
+    fund_performance_filter_out = amfi_api_call(full_url=fund_performance_filter_api_url, payload={}, method="POST")
+    final_output = fund_performance_filter_out.get("data")
+    report_date = final_output.get("reportDate")
+
+    df_maturity = pd.DataFrame(final_output.get('maturityTypeList')).rename(
+        columns={'name': 'MaturityType_name', 'id': 'MaturityType_id'}
+    )
+
+    df_fund = pd.DataFrame(final_output.get('mutualFundList')).rename(
+        columns={'name': 'MutualFund_name', 'id': 'MutualFund_id'}
+    )
+
+    investment_combined_dfs = []
+    for category in final_output.get('investmentTypeList', []):
+        # Using [category] instead of index=[0] is cleaner for dictionaries
+        df_category = pd.DataFrame([category]).rename(
+            columns={'name': 'InvestmentType_name', 'id': 'InvestmentType_id'}
+        )
+
+        # Make API Call for Subcategories
+        fund_performance_subcategory_out = amfi_api_call(
+            full_url=fund_performance_subcategory_api_url,
+            payload={"category": category.get('id')},
+            method="POST"
+        )
+
+        subcat_data = fund_performance_subcategory_out.get("data", [])
+
+        if subcat_data:
+            # If subcategories exist, create the dataframe and cross join with the parent category
+            df_subcat = pd.DataFrame(subcat_data).rename(
+                columns={'name': 'SubInvestmentType_name', 'id': 'SubInvestmentType_id'}
+            )
+            df_investment_segment = df_category.merge(df_subcat, how='cross')
+            investment_combined_dfs.append(df_investment_segment)
+        else:
+            # If API returns no subcategories, safely keep the parent category with Null subcategories
+            df_category['SubInvestmentType_name'] = pd.NA
+            df_category['SubInvestmentType_id'] = pd.NA
+            investment_combined_dfs.append(df_category)
+
+    df_investment = pd.concat(investment_combined_dfs, ignore_index=True)
+
+    df_final_fund_performance_filter = df_maturity.merge(df_investment, how='cross').merge(df_fund, how='cross')
+    df_final_fund_performance_filter['ReportDate'] = final_output.get('reportDate')
+
+    fund_performance_dfs = []
+
+    for record in df_final_fund_performance_filter.loc[:,["MaturityType_name", "MaturityType_id", "InvestmentType_name", "InvestmentType_id", "SubInvestmentType_name", "SubInvestmentType_id", "ReportDate"]].drop_duplicates().itertuples(index=False):
+        payload = dict()
+        payload["maturityType"] = record.MaturityType_id
+        payload["category"] = record.InvestmentType_id
+        payload["subCategory"] = record.SubInvestmentType_id
+        payload["mfid"] = 0
+        payload["reportDate"] = record.ReportDate
+
+        fund_performance_out = amfi_api_call(full_url=fund_performance_api_url, payload=payload, method="POST")
+        fund_performance_df = pd.DataFrame(fund_performance_out.get("data"))
+
+        if fund_performance_df.empty:
+            continue
+        fund_performance_df['maturity_type'] = record.MaturityType_name
+        fund_performance_df['investment_type'] = record.InvestmentType_name
+        fund_performance_df['sub_category'] = record.SubInvestmentType_name
+        fund_performance_dfs.append(fund_performance_df)
+        # print(f"Payload: {payload}")
+    final_fund_performance_df = pd.concat(fund_performance_dfs, ignore_index=True)
+    final_fund_performance_df = final_fund_performance_df.loc[:, ['preNavDate', 'preNavRegular', 'preNavDirect', 'schemeName', 'benchmark', 
+        'riskometerScheme',     'riskometerBenchmark','navDate', 'navDirect',
+        'return7DaysDirect', 'return7DaysBenchmark', 'return15DaysDirect', 'return15DaysBenchmark',
+        'return1MonthDirect', 'return1MonthBenchmark', 'return3MonthDirect', 'return3MonthBenchmark',
+        'return6MonthDirect', 'return6MonthBenchmark', 'return1YearDirect', 'return1YearBenchmark',
+        'return3YearDirect', 'return3YearBenchmark', 'return5YearDirect', 'return5YearBenchmark',
+        'return10YearDirect', 'return10YearBenchmark', 'returnSinceLaunchDirect', 'returnSinceLaunchBenchmarkDirect',
+        'dailyAUM', 'preMonthAUM', 'preMonthAvgAUM', 'ir1YrDirect', 'ir3YrDirect', 'ir5YrDirect', 'ir10YrDirect', 'maturity_type', 'investment_type', 'sub_category']]
+    return final_fund_performance_df

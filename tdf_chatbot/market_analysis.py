@@ -94,7 +94,7 @@ def show_screener():
                 },
                 disabled=["Symbol", "LTP", "Change %", "Volume"], # Only 'Select' is editable
                 hide_index=True,
-                use_container_width=True,
+                width='stretch',
                 height=500,
                 key=f"editor_{indices[i]}" # Unique key for each tab
             )
@@ -137,7 +137,7 @@ def show_algo_setup():
         st.selectbox("Execution Mode", ["Paper Trading", "Live Market"])
         st.slider("Stop Loss %", 0.5, 5.0, 1.0)
         
-    st.button("🚀 Deploy Algo", type="primary", use_container_width=True)
+    st.button("🚀 Deploy Algo", type="primary", width='stretch')
 
 # --- 6. Main Router ---
 if st.session_state.page == "screener":

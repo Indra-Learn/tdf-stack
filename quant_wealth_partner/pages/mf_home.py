@@ -485,7 +485,7 @@ st.divider()
 
 # --- Step 4: Action / Suggestion Engine ---
 # In your architecture, this button would trigger a LangGraph Agent via FastAPI
-if st.button("💡 Generate Mutual Fund Strategy", use_container_width=True):
+if st.button("💡 Generate Mutual Fund Strategy", width='stretch'):
     st.markdown(f"### Recommended Asset Allocation for: {event}")
     
     # Custom Override for Medical (Always Liquid)

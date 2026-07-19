@@ -4,3 +4,5 @@ streamlit-extras==1.4.1
 scipy==1.17.1
 pandas==3.0.2
 requests==2.33.1
+pytz==2026.2
+lxml==6.1.1
